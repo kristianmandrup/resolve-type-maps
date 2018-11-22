@@ -1,4 +1,4 @@
-import { EntryMatcher } from "./EntryMatcher";
+import { EntryMatcher } from './EntryMatcher';
 
 const identity = obj => obj;
 
@@ -11,9 +11,9 @@ export class TypeMap extends EntryMatcher {
   resolve(typeMap, typeName) {
     const hit = typeMap[typeName] || {};
     let result;
-    Object.keys(typeMap).find(typeName => {
-      const obj = typeMap[typeName];
-      const matches = this.resolveMatches(obj, { key: typeName });
+    Object.keys(typeMap).find(name => {
+      const obj = typeMap[name];
+      const matches = this.resolveMatches(obj, { key: name });
       result = this.matchResult(obj, matches);
       return result;
     });

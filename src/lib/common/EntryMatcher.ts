@@ -1,9 +1,7 @@
-import { BaseMapResolver } from "./BaseMapResolver";
-
-const escapeStrRegexp = require("escape-string-regexp");
+import { BaseMapResolver } from './BaseMapResolver';
 
 export class EntryMatcher extends BaseMapResolver {
-  resolveResult: Function;
+  resolveResult: (obj: any) => any;
 
   constructor(ctx: any, config = {}) {
     super(ctx, config);
@@ -11,7 +9,7 @@ export class EntryMatcher extends BaseMapResolver {
   }
 
   resolveMatches(obj, { key }) {
-    if (typeof obj === "string") {
+    if (typeof obj === 'string') {
       return [obj];
     }
     return obj.match || obj.matches || [key];
@@ -31,10 +29,12 @@ export class EntryMatcher extends BaseMapResolver {
 
   matchName(matchItem) {
     const { regExpOpts, fieldName } = this.ctx;
-    const regExpPattern =
-      typeof matchItem === "string" ? escapeStrRegexp(matchItem) : matchItem;
-    const opts = regExpOpts || "i";
-    const regExp = new RegExp(regExpPattern, opts);
+    const regExp = this.prepareRegExp(matchItem, regExpOpts);
     return regExp.test(fieldName);
+  }
+
+  prepareRegExp(text, opts) {
+    const regExpOpts = opts || 'i';
+    return new RegExp(text, regExpOpts);
   }
 }
