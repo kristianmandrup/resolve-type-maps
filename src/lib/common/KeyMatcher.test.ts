@@ -76,7 +76,7 @@ describe('createKeyMatcher', () => {
     fieldMap,
     fieldType,
     typeName,
-    functions
+    functions: functions.valid
   };
   const keyMatcher = createKeyMatcher(ctx);
 
@@ -90,11 +90,11 @@ describe('createKeyMatcher', () => {
     });
 
     test('functions', () => {
-      expect(keyMatcher.functions).toBe(functions);
+      expect(keyMatcher.functions).toBe(functions.valid);
     });
 
     test('isValidResult', () => {
-      expect(keyMatcher.isValidResult).toBe(functions);
+      expect(keyMatcher.isValidResult).toBe(isValidResult);
     });
   });
 
@@ -155,9 +155,9 @@ describe('createKeyMatcher', () => {
       expect(value).toBeDefined();
     });
 
-    test('resolves unknown key to falsy', () => {
+    test('resolves unknown key to unknown (default if not match)', () => {
       const value = resolve('unknown');
-      expect(value).toBeFalsy();
+      expect(value).toEqual('unknown');
     });
   });
 });

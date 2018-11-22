@@ -8,6 +8,10 @@ export function createKeyResolver(ctx: any, config: any = {}) {
   return createKeyMatcher(ctx, config).resolver;
 }
 
+const lower = (str: string) => str.toLowerCase();
+
+const capitalize = (str: string) => str.replace(/^\w/, c => c.toUpperCase());
+
 export class KeyMatcher extends EntryMatcher {
   ctx: any;
   fieldMap: any;
@@ -31,12 +35,13 @@ export class KeyMatcher extends EntryMatcher {
     this.typeName = typeName;
   }
 
-  resolveObj(obj) {
+  resolveObj(obj: any = {}) {
     const { fieldType } = this;
     // allow more fine grained mapping on type of field
     return (
       obj[fieldType] ||
-      obj[fieldType.toLowerCase()] ||
+      obj[lower(fieldType)] ||
+      obj[capitalize(fieldType)] ||
       obj.default ||
       obj.any ||
       obj
