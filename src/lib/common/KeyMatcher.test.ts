@@ -1,17 +1,25 @@
-import { createKeyMatcher, KeyMatcher } from "./KeyMatcher";
+import { createKeyMatcher, KeyMatcher } from './KeyMatcher';
 
 // re-align `typeFieldMap` and `fieldMap` (resolve examples and fakes), using a generic `resultResolver`.
 // Allow `matches` list for both, using `resolveMatches`
 
-describe("FieldMap", () => {
+const isValidResult = (_: any) => true;
+
+const functions = {
+  invalid: {},
+  valid: {
+    isValidResult
+  }
+};
+
+describe('FieldMap', () => {
   const ctx: any = {
     valid: {
-      functions: {
-        createKeyMatcher: () => ({})
-      }
+      functions
     },
     invalid: {}
   };
+
   const config = {
     resolvers: {
       maps: {
@@ -30,18 +38,18 @@ describe("FieldMap", () => {
     }
   };
 
-  describe("new", () => {
-    test("invalid ctx throws", () => {
+  describe('new', () => {
+    test('invalid ctx throws', () => {
       expect(() => new KeyMatcher(ctx.invalid, config)).toThrow();
     });
 
-    test("valid ctx does not throw", () => {
+    test('valid ctx does not throw', () => {
       expect(() => new KeyMatcher(ctx.valid, config)).not.toThrow();
     });
   });
 });
 
-describe("createKeyMatcher", () => {
+describe('createKeyMatcher', () => {
   // fieldMap,
   // type,
   // typeName,
@@ -59,14 +67,97 @@ describe("createKeyMatcher", () => {
   //   name: "firstName"
   // };
 
-  const ctx: any = {};
-  const key = "x";
-  const matchKey = createKeyMatcher(ctx).resolver;
-  const value = matchKey(key);
+  const fieldMap = {
+    x: 2
+  };
+  const fieldType = 'string';
+  const typeName = 'Person';
+  const ctx: any = {
+    fieldMap,
+    fieldType,
+    typeName,
+    functions
+  };
+  const keyMatcher = createKeyMatcher(ctx);
 
-  describe("value", () => {
-    test("is defined", () => {
+  describe('keyMatcher instance', () => {
+    test('fieldMap', () => {
+      expect(keyMatcher.fieldMap).toBe(fieldMap);
+    });
+
+    test('fieldType', () => {
+      expect(keyMatcher.fieldType).toBe(fieldType);
+    });
+
+    test('functions', () => {
+      expect(keyMatcher.functions).toBe(functions);
+    });
+
+    test('isValidResult', () => {
+      expect(keyMatcher.isValidResult).toBe(functions);
+    });
+  });
+
+  describe('resolveObj', () => {
+    const value = 32;
+
+    describe('string', () => {
+      const obj = {
+        string: {
+          value
+        }
+      };
+      const valueObj = keyMatcher.resolveObj(obj);
+      test('resolves existing key to value', () => {
+        expect(valueObj.value).toBe(value);
+      });
+    });
+
+    describe('String', () => {
+      const obj = {
+        String: {
+          value
+        }
+      };
+      const valueObj = keyMatcher.resolveObj(obj);
+      test('resolves existing key to value', () => {
+        expect(valueObj.value).toBe(value);
+      });
+    });
+
+    describe('default', () => {
+      const obj = {
+        default: {
+          value
+        }
+      };
+      const valueObj = keyMatcher.resolveObj(obj);
+      test('resolves existing key to value', () => {
+        expect(valueObj.value).toBe(value);
+      });
+    });
+
+    describe('fallback to object', () => {
+      const obj = {
+        value
+      };
+      const valueObj = keyMatcher.resolveObj(obj);
+      test('resolves existing key to value', () => {
+        expect(valueObj.value).toBe(value);
+      });
+    });
+  });
+
+  describe('resolver', () => {
+    const resolve = keyMatcher.resolver;
+    test('resolves existing key to value', () => {
+      const value = resolve('x');
       expect(value).toBeDefined();
+    });
+
+    test('resolves unknown key to falsy', () => {
+      const value = resolve('unknown');
+      expect(value).toBeFalsy();
     });
   });
 });

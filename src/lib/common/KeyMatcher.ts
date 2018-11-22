@@ -1,7 +1,11 @@
-import { EntryMatcher } from "./EntryMatcher";
+import { EntryMatcher } from './EntryMatcher';
 
 export function createKeyMatcher(ctx: any, config: any = {}) {
   return new KeyMatcher(ctx, config);
+}
+
+export function createKeyResolver(ctx: any, config: any = {}) {
+  return createKeyMatcher(ctx, config).resolver;
 }
 
 export class KeyMatcher extends EntryMatcher {
@@ -16,7 +20,7 @@ export class KeyMatcher extends EntryMatcher {
     super(ctx, config);
     const { fieldMap, fieldType, typeName, functions } = ctx;
     if (!functions) {
-      this.error("missing functions entry on context");
+      this.error('missing functions entry on context');
     }
     this.functions = functions;
     const { isValidResult } = functions;
@@ -60,7 +64,7 @@ export class KeyMatcher extends EntryMatcher {
   }
 
   resolveMatches(obj, { key }) {
-    if (typeof obj === "string") {
+    if (typeof obj === 'string') {
       return [obj];
     }
     return obj.match || obj.matches || [key];

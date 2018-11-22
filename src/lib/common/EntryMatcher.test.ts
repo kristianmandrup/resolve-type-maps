@@ -1,6 +1,7 @@
-import { EntryMatcher } from "./EntryMatcher";
+import { EntryMatcher } from './EntryMatcher';
+import { fakes, examples } from '../maps';
 
-describe("EntryMatcher", () => {
+describe('EntryMatcher', () => {
   const ctx: any = {
     valid: {
       functions: {
@@ -18,56 +19,65 @@ describe("EntryMatcher", () => {
       }
     },
     maps: {
-      fakes: {
-        x: 1
-      },
-      examples: {
-        x: 2
-      }
+      fakes,
+      examples
     }
   };
 
-  const obj = {};
-  const matches = ["label", "caption"];
+  const matches = ['label', 'caption'];
 
-  describe("new", () => {
-    test("invalid ctx throws", () => {
+  describe('new', () => {
+    test('invalid ctx throws', () => {
       expect(() => new EntryMatcher(ctx.invalid, config)).toThrow();
     });
 
-    test("valid ctx does not throw", () => {
+    test('valid ctx does not throw', () => {
       expect(() => new EntryMatcher(ctx.valid, config)).not.toThrow();
     });
   });
 
-  describe("instance", () => {
+  describe('instance', () => {
     const entryMatcher = new EntryMatcher(ctx.valid, config);
-    test("defined", () => {
+    test('defined', () => {
       expect(entryMatcher).toBeDefined();
     });
 
-    describe("resolveMatches", () => {
-      const obj = {};
-      const key = "name";
-      const resolved = entryMatcher.resolveMatches(obj, { key });
-      test("resolved", () => {
-        expect(resolved).toBeDefined();
+    describe('resolveMatches', () => {
+      const obj = {
+        x: 32
+      };
+
+      describe('matching key', () => {
+        const key = 'x';
+        const resolved = entryMatcher.resolveMatches(obj, { key });
+        test('resolved', () => {
+          expect(resolved).toBeDefined();
+        });
+      });
+
+      describe('not matching key', () => {
+        const key = 'unknown';
+        const notResolved = entryMatcher.resolveMatches(obj, { key });
+        test('resolved', () => {
+          expect(notResolved).toBeFalsy();
+        });
       });
     });
 
-    describe("matchResult", () => {
+    describe('matchResult', () => {
+      const obj = {};
       const result = entryMatcher.matchResult(obj, matches);
 
-      test("result matched", () => {
+      test('result matched', () => {
         expect(result).toBeDefined();
       });
     });
 
-    describe("matchName", () => {
+    describe('matchName', () => {
       const matchItem = {};
       const matched = entryMatcher.matchName(matchItem);
 
-      test("item matched", () => {
+      test('item matched', () => {
         expect(matched).toBeDefined();
       });
     });
