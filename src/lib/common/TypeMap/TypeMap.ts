@@ -13,14 +13,21 @@ export class TypeMap extends EntryMatcher {
     return typeMap[typeName] || {};
   }
 
+  createEntryResolver({ typeNameToMatch, matchingTypeMap }) {
+    return new TypeMapResolver(
+      { typeNameToMatch, matchingTypeMap },
+      this.config
+    );
+  }
+
   resolve(typeMap, typeNameToMatch) {
     const matchingTypeMap = this.findTypeMap(typeMap, typeNameToMatch);
     const typeNamesInMap = Object.keys(matchingTypeMap);
     let result;
-    const resolver = new TypeMapResolver(
-      { typeNameToMatch, matchingTypeMap },
-      this.config
-    );
+    const resolver = this.createEntryResolver({
+      typeNameToMatch,
+      matchingTypeMap
+    });
     typeNamesInMap.find(typeNameInMap => {
       result = resolver.resolve(typeNameInMap);
       return result;
