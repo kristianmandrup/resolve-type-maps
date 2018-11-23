@@ -1,4 +1,5 @@
 import { BaseMapResolver } from './BaseMapResolver';
+import { ItemMatcher } from './ItemMatcher';
 
 export class EntryMatcher extends BaseMapResolver {
   resolveResult: (obj: any) => any;
@@ -7,52 +8,37 @@ export class EntryMatcher extends BaseMapResolver {
   constructor(ctx: any, config = {}) {
     super(ctx, config);
     this.resolveResult = this.functions.resolveResult;
-    this.name = ctx.name;
+    const { name } = ctx;
+    if (!name) {
+      this.error('missing name', ctx);
+    }
+    this.name = name;
   }
 
   resolveMatches(obj, { key }) {
     if (typeof obj === 'string') {
       return [obj];
     }
-    return obj.match || obj.matches || [key];
+    const matches = obj.match || obj.matches || key;
+    return Array.isArray(matches) ? matches : [matches];
   }
 
   matchResult(obj, matches) {
     if (!this.resolveResult) {
       this.error('missing function: resolveResult', this.ctx);
     }
-    let result;
     // todo: make generic
-    matches.find(matchItem => {
-      if (this.matchName(matchItem)) {
-        result = this.resolveResult(obj);
-        return matchItem;
-      }
+    const isMatching = this.findMatch(matches);
+    return isMatching ? this.resolveResult(obj) : null;
+  }
+
+  findMatch(matches) {
+    return matches.find(matchItem => {
+      return this.createItemMatcher(matchItem).match();
     });
-    return result;
   }
 
-  matchName(matchItem) {
-    const { ctx } = this;
-    const { regExpOpts, name } = ctx;
-    if (!name) {
-      this.error('missing name', ctx);
-    }
-    const regExp = this.prepareRegExp(matchItem, regExpOpts);
-    return regExp ? regExp.test(name) : false;
-  }
-
-  prepareRegExp(matchExpr, opts?): RegExp {
-    const regExpOpts = opts || 'i';
-    if (!matchExpr) {
-      this.warn('Invalid match expression', {
-        matchExpr,
-        ctx: this.ctx
-      });
-    }
-
-    return matchExpr instanceof RegExp
-      ? matchExpr
-      : new RegExp(matchExpr, regExpOpts);
+  createItemMatcher(matchItem) {
+    return new ItemMatcher({ matchItem, ...this.ctx }, this.config);
   }
 }

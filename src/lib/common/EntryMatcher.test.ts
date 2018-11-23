@@ -110,7 +110,7 @@ describe('EntryMatcher', () => {
 
     describe('matchName', () => {
       const matchItem = {};
-      const matched = entryMatcher.matchName(matchItem);
+      const matched = entryMatcher.findMatch(matchItem);
 
       test('item matched', () => {
         expect(matched).toBeDefined();
