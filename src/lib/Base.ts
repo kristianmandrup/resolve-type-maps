@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as path from 'path';
 
 export class Base {
   config: any;
@@ -6,10 +6,14 @@ export class Base {
 
   constructor(config) {
     this.config = config;
-    if (this.isEnabled("logging")) {
+    if (this.isEnabled('logging')) {
       config.log = config.log || console.log;
     }
     this.log = config.log;
+  }
+
+  warn(msg, data?) {
+    data ? console.error(msg, data) : console.error(msg);
   }
 
   error(msg, data?) {
@@ -23,11 +27,11 @@ export class Base {
   }
 
   get rootPath() {
-    return path.join(__dirname, "..");
+    return path.join(__dirname, '..');
   }
 
   validateFunction({ method, functionName, func, data, error }) {
-    if (typeof func !== "function") {
+    if (typeof func !== 'function') {
       error(`${method}: missing or invalid ${functionName} function`, {
         [functionName]: func,
         ...data

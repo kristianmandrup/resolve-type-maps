@@ -1,5 +1,7 @@
 import { EntryMatcher } from '../EntryMatcher';
 
+const identity = obj => obj;
+
 export class TypeMapEntryResolver extends EntryMatcher {
   typeMap: any;
   typeName: string;
@@ -9,6 +11,7 @@ export class TypeMapEntryResolver extends EntryMatcher {
     const { typeMap, typeName } = ctx;
     this.typeMap = typeMap;
     this.typeName = typeName;
+    this.resolveResult = this.resolveResult || identity;
   }
 
   findTypeMap(typeMap, typeName) {

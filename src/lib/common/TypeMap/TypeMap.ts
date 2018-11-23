@@ -1,12 +1,9 @@
 import { EntryMatcher } from '../EntryMatcher';
-import { TypeMapResolver } from './TypeMapResolver';
-
-const identity = obj => obj;
+import { TypeMapEntryResolver } from './TypeMapEntryResolver';
 
 export class TypeMap extends EntryMatcher {
   constructor(ctx: any, config = {}) {
     super(ctx, config);
-    this.resolveResult = identity;
   }
 
   findTypeMap(typeMap, typeName) {
@@ -14,7 +11,7 @@ export class TypeMap extends EntryMatcher {
   }
 
   createEntryResolver({ typeNameToMatch, matchingTypeMap }) {
-    return new TypeMapResolver(
+    return new TypeMapEntryResolver(
       { typeNameToMatch, matchingTypeMap },
       this.config
     );

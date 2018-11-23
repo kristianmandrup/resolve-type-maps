@@ -2,10 +2,12 @@ import { BaseMapResolver } from './BaseMapResolver';
 
 export class EntryMatcher extends BaseMapResolver {
   resolveResult: (obj: any) => any;
+  name: string;
 
   constructor(ctx: any, config = {}) {
     super(ctx, config);
-    this.resolveResult = ctx.functions.resolveResult;
+    this.resolveResult = this.functions.resolveResult;
+    this.name = ctx.name;
   }
 
   resolveMatches(obj, { key }) {
@@ -16,6 +18,9 @@ export class EntryMatcher extends BaseMapResolver {
   }
 
   matchResult(obj, matches) {
+    if (!this.resolveResult) {
+      this.error('missing function: resolveResult', this.ctx);
+    }
     let result;
     // todo: make generic
     matches.find(matchItem => {
@@ -28,13 +33,26 @@ export class EntryMatcher extends BaseMapResolver {
   }
 
   matchName(matchItem) {
-    const { regExpOpts, fieldName } = this.ctx;
+    const { ctx } = this;
+    const { regExpOpts, name } = ctx;
+    if (!name) {
+      this.error('missing name', ctx);
+    }
     const regExp = this.prepareRegExp(matchItem, regExpOpts);
-    return regExp.test(fieldName);
+    return regExp ? regExp.test(name) : false;
   }
 
-  prepareRegExp(text, opts) {
+  prepareRegExp(matchExpr, opts?): RegExp {
     const regExpOpts = opts || 'i';
-    return new RegExp(text, regExpOpts);
+    if (!matchExpr) {
+      this.warn('Invalid match expression', {
+        matchExpr,
+        ctx: this.ctx
+      });
+    }
+
+    return matchExpr instanceof RegExp
+      ? matchExpr
+      : new RegExp(matchExpr, regExpOpts);
   }
 }

@@ -2,10 +2,13 @@ import { Base } from '../Base';
 
 export class BaseMapResolver extends Base {
   ctx: any;
+  functions: any;
 
-  constructor(ctx, config = {}) {
+  constructor(ctx: any = {}, config = {}) {
     super(config);
     this.ctx = ctx;
+    const functions = ctx.functions || {};
+    this.functions = functions;
   }
 
   get resolversMap() {

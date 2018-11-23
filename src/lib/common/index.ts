@@ -1,4 +1,4 @@
-import { TypeMap } from "./TypeMap";
+import { TypeMap } from './TypeMap';
 
 export const hasMatches = (obj: any = {}) =>
   Object.values(obj).find((val: any) => val.matches);

@@ -1,23 +1,24 @@
 import { EntryMatcher } from './EntryMatcher';
 import { fakes, examples } from '../maps';
 
+const resolveResult = obj => obj;
+
 describe('EntryMatcher', () => {
   const ctx: any = {
     valid: {
+      name: 'label',
       functions: {
+        resolveResult,
         createKeyMatcher: () => ({})
       }
     },
-    invalid: {}
-  };
-  const config = {
-    resolvers: {
-      maps: {
-        fakes: {
-          resolveResult: () => 1
-        }
-      }
+    noFunctions: {
+      name: 'label'
     },
+    empty: {}
+  };
+
+  const config = {
     maps: {
       fakes,
       examples
@@ -27,8 +28,9 @@ describe('EntryMatcher', () => {
   const matches = ['label', 'caption'];
 
   describe('new', () => {
-    test('invalid ctx throws', () => {
-      expect(() => new EntryMatcher(ctx.invalid, config)).toThrow();
+    // let sub classes take care of assigning default functions as needed
+    test('no functions: ok', () => {
+      expect(() => new EntryMatcher(ctx.noFunctions, config)).not.toThrow();
     });
 
     test('valid ctx does not throw', () => {
@@ -40,6 +42,28 @@ describe('EntryMatcher', () => {
     const entryMatcher = new EntryMatcher(ctx.valid, config);
     test('defined', () => {
       expect(entryMatcher).toBeDefined();
+    });
+
+    describe('prepareRegExp', () => {
+      test('basic string', () => {
+        const regExp = entryMatcher.prepareRegExp('he');
+        expect(regExp.test('hello')).toBeTruthy();
+      });
+
+      test('empty string', () => {
+        const regExp = entryMatcher.prepareRegExp('');
+        expect(regExp.test('hello')).toBeTruthy();
+      });
+
+      test('string with special RegExp symbols', () => {
+        const regExp = entryMatcher.prepareRegExp('h\\w+');
+        expect(regExp.test('hello')).toBeTruthy();
+      });
+
+      test('RegExp', () => {
+        const regExp = entryMatcher.prepareRegExp(/h\w+/);
+        expect(regExp.test('hello')).toBeTruthy();
+      });
     });
 
     describe('resolveMatches', () => {
@@ -59,15 +83,26 @@ describe('EntryMatcher', () => {
         const key = 'unknown';
         const notResolved = entryMatcher.resolveMatches(obj, { key });
         test('resolved', () => {
-          expect(notResolved).toBeFalsy();
+          expect(notResolved).toEqual(['unknown']);
         });
       });
     });
 
     describe('matchResult', () => {
-      const obj = {};
-      const result = entryMatcher.matchResult(obj, matches);
+      const obj = {
+        label: {
+          value: 2
+        }
+      };
 
+      describe('missing name', () => {
+        const entryMatcher = new EntryMatcher(ctx.empty, config);
+        test('throws', () => {
+          expect(() => entryMatcher.matchResult(obj, matches)).toThrow();
+        });
+      });
+
+      const result = entryMatcher.matchResult(obj, matches);
       test('result matched', () => {
         expect(result).toBeDefined();
       });
