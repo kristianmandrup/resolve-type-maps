@@ -1,13 +1,13 @@
-import * as maps from "./maps";
-import { BaseMapResolver } from "./common/BaseMapResolver";
-import { resolveFromFieldMap } from "./common/FieldMap";
-import { createKeyMatcher } from "./common/KeyMatcher";
+import * as maps from './maps';
+import { BaseMapResolver } from './common/BaseMapResolver';
+import { resolveFromFieldMap } from './common/FieldMap';
+import { createKeyMatcher } from './common/KeyMatcher';
 
 export class MapResolver extends BaseMapResolver {
   fieldMap: any;
   context: any;
   typeFieldMap: any;
-  resolveFromFieldMap: Function;
+  resolveFromFieldMap: (ctx, config?) => string | null;
   functions: any;
 
   constructor(confName, ctx: any = {}, config: any = {}) {
@@ -15,7 +15,7 @@ export class MapResolver extends BaseMapResolver {
     const { type, field } = ctx;
     const error = config.error;
     const log = config.log || console.log;
-    const typeName = typeof type === "string" ? type : type.name;
+    const typeName = typeof type === 'string' ? type : type.name;
     const fieldName = field.name;
     const fieldType = field.type;
 
@@ -48,19 +48,21 @@ export class MapResolver extends BaseMapResolver {
     };
   }
 
+  resolve() {
+    return this.resolveMap(this.typeFieldMap) || this.resolveMap(this.fieldMap);
+  }
+
   protected get createKeyMatcher() {
     return createKeyMatcher;
   }
 
   protected resolveMap(map) {
-    if (!map) return;
+    if (!map) {
+      return null;
+    }
     return this.resolveFromFieldMap({
       fieldMap: map,
       ...this.context
     });
-  }
-
-  resolve() {
-    return this.resolveMap(this.typeFieldMap) || this.resolveMap(this.fieldMap);
   }
 }

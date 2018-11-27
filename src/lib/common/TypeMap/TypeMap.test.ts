@@ -1,7 +1,9 @@
-import { TypeMap } from "./TypeMap";
+import { TypeMap } from './TypeMap';
 
-describe("TypeMap", () => {
-  const ctx: any = {};
+describe('TypeMap', () => {
+  const ctx: any = {
+    name: 'label'
+  };
   const config = {
     resolvers: {
       maps: {
@@ -22,16 +24,16 @@ describe("TypeMap", () => {
 
   const typeMap = new TypeMap(ctx, config);
 
-  describe("instance", () => {
-    test("defined", () => {
+  describe('instance', () => {
+    test('defined', () => {
       expect(typeMap).toBeDefined();
     });
 
-    describe("resolve", () => {
+    describe('resolve', () => {
       const maps: any = config.maps.fakes;
-      const resolved = typeMap.resolve(maps.typeMap, "Person");
+      const resolved = typeMap.resolve(maps.typeMap, 'Person');
 
-      test("resolved", () => {
+      test('resolved', () => {
         expect(resolved).toBeDefined();
       });
     });

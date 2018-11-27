@@ -15,6 +15,7 @@ const functions = {
 describe('FieldMap', () => {
   const ctx: any = {
     valid: {
+      name: 'label',
       functions
     },
     invalid: {}
@@ -38,12 +39,12 @@ describe('FieldMap', () => {
     }
   };
 
-  describe('new', () => {
+  describe.only('new', () => {
     test('invalid ctx throws', () => {
       expect(() => new KeyMatcher(ctx.invalid, config)).toThrow();
     });
 
-    test('valid ctx does not throw', () => {
+    test.only('valid ctx does not throw', () => {
       expect(() => new KeyMatcher(ctx.valid, config)).not.toThrow();
     });
   });

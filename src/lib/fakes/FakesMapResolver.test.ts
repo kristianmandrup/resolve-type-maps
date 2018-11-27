@@ -9,7 +9,6 @@ describe('resolveFake', () => {
     name: 'firstName'
   };
   const fake = resolveFakes({ type, field });
-
   describe('fake', () => {
     test('is defined', () => {
       expect(fake).toBeDefined();
@@ -44,7 +43,8 @@ describe('resolveResult', () => {
   const value = {
     type
   };
-  const fakeType = resolveResult({ value });
+  const fakeObj = resolveResult({ value });
+  const fakeType = fakeObj.faker.type;
 
   describe('fakeType', () => {
     test('is type', () => {

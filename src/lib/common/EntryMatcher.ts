@@ -28,11 +28,20 @@ export class EntryMatcher extends BaseMapResolver {
       this.error('missing function: resolveResult', this.ctx);
     }
     // todo: make generic
-    const isMatching = this.findMatch(matches);
+    const isMatching = this.findMatch(matches || []);
     return isMatching ? this.resolveResult(obj) : null;
   }
 
   findMatch(matches) {
+    if (!Array.isArray(matches)) {
+      this.error(
+        'findMatch: Invalid matches. Must be an array or object with a find function',
+        { matches }
+      );
+    }
+    if (typeof matches.find !== 'function') {
+      this.error('matches missing find function', { matches });
+    }
     return matches.find(matchItem => {
       return this.createItemMatcher(matchItem).match();
     });

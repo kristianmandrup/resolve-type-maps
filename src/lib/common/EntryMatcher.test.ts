@@ -44,28 +44,6 @@ describe('EntryMatcher', () => {
       expect(entryMatcher).toBeDefined();
     });
 
-    describe('prepareRegExp', () => {
-      test('basic string', () => {
-        const regExp = entryMatcher.prepareRegExp('he');
-        expect(regExp.test('hello')).toBeTruthy();
-      });
-
-      test('empty string', () => {
-        const regExp = entryMatcher.prepareRegExp('');
-        expect(regExp.test('hello')).toBeTruthy();
-      });
-
-      test('string with special RegExp symbols', () => {
-        const regExp = entryMatcher.prepareRegExp('h\\w+');
-        expect(regExp.test('hello')).toBeTruthy();
-      });
-
-      test('RegExp', () => {
-        const regExp = entryMatcher.prepareRegExp(/h\w+/);
-        expect(regExp.test('hello')).toBeTruthy();
-      });
-    });
-
     describe('resolveMatches', () => {
       const obj = {
         x: 32
@@ -109,8 +87,8 @@ describe('EntryMatcher', () => {
     });
 
     describe('matchName', () => {
-      const matchItem = {};
-      const matched = entryMatcher.findMatch(matchItem);
+      const matches = ['label', 'caption'];
+      const matched = entryMatcher.findMatch(matches);
 
       test('item matched', () => {
         expect(matched).toBeDefined();

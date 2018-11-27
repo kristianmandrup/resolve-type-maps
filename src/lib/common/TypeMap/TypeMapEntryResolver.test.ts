@@ -13,7 +13,7 @@ describe('TypeMap', () => {
     }
   };
 
-  const ctx = { typeMap, typeName: 'Person' };
+  const ctx = { typeMap, typeName: 'Person', name: 'label' };
   const resolver = new TypeMapEntryResolver(ctx);
 
   describe('instance', () => {
@@ -29,8 +29,9 @@ describe('TypeMap', () => {
       });
     });
 
-    describe('resolve: matches', () => {
+    describe.only('resolve: matches', () => {
       const resolved = resolver.resolve('User');
+      console.log({ resolved });
 
       test('resolved', () => {
         expect(resolved).toBeDefined();

@@ -1,4 +1,4 @@
-import { MapResolver } from "../MapResolver";
+import { MapResolver } from '../MapResolver';
 
 export const isValidResult = Array.isArray;
 

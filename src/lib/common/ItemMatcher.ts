@@ -8,6 +8,9 @@ export class ItemMatcher extends BaseMapResolver {
     super(ctx, config);
     const { matchItem, name } = ctx;
     this.matchItem = matchItem;
+    if (!name) {
+      this.error('missing name', ctx);
+    }
     this.name = name;
   }
 

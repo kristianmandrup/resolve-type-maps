@@ -1,4 +1,4 @@
-import { Base } from "../../../../Base";
+import { Base } from '../Base';
 
 export function resolveFromFieldMap(ctx, config?) {
   return new FieldMap(ctx, config).resolve();
@@ -17,7 +17,7 @@ export class FieldMap extends Base {
   // log
   fieldMap: any;
   ctx: any;
-  createKeyMatcher: Function;
+  createKeyMatcher: (ctx: any) => (ctx: any) => string | null;
   matchKey: (key: string) => any;
 
   constructor(ctx: any, config = {}) {
@@ -25,10 +25,10 @@ export class FieldMap extends Base {
     this.ctx = ctx;
     const { fieldMap, functions } = ctx;
     if (!functions) {
-      this.error("missing functions entry on context");
+      this.error('missing functions entry on context');
     }
     if (!fieldMap) {
-      this.error("missing fieldMap");
+      this.error('missing fieldMap');
     }
     this.fieldMap = fieldMap;
     this.createKeyMatcher = functions.createKeyMatcher;
@@ -37,12 +37,12 @@ export class FieldMap extends Base {
 
   resolve() {
     this.validateFunction({
-      method: "resolve",
+      method: 'resolve',
       data: {
         config: this.config
       },
       func: this.createKeyMatcher,
-      functionName: "createKeyMatcher",
+      functionName: 'createKeyMatcher',
       error: this.error
     });
 
