@@ -9,7 +9,7 @@ export const resolveResult = obj => {
 
 export class ExamplesMapResolver extends MapResolver {
   constructor(ctx = {}, config = {}) {
-    super(ctx, config);
+    super('examples', ctx, config);
     this.functions = {
       ...this.functions,
       isValidResult,

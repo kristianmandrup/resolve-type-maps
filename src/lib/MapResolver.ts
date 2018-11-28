@@ -7,15 +7,19 @@ export class MapResolver extends BaseMapResolver {
   fieldMap: any;
   context: any;
   typeFieldMap: any;
-  resolveFromFieldMap: (ctx, config?) => string | null;
+  resolveFromFieldMap: (ctx, config?) => any;
   functions: any;
 
   constructor(confName, ctx: any = {}, config: any = {}) {
     super(ctx, config);
-    const { type, field } = ctx;
+    const { type, field, name } = ctx;
     const error = config.error;
     const log = config.log || console.log;
     const typeName = typeof type === 'string' ? type : type.name;
+    if (!field) {
+      this.error('missing field in ctx', ctx);
+    }
+
     const fieldName = field.name;
     const fieldType = field.type;
 
@@ -25,20 +29,21 @@ export class MapResolver extends BaseMapResolver {
     const typeMap = confMap.typeMap || {};
     this.fieldMap = confMap.fieldMap || {};
 
-    const typeExamples = typeMap[typeName] || {};
-    this.typeFieldMap = typeExamples[fieldName];
+    const typeMapForName = typeMap[typeName] || {};
+    this.typeFieldMap = typeMapForName[fieldName];
 
-    const createKeyMatcher = funs.createKeyMatcher || this.createKeyMatcher;
+    const $createKeyMatcher = funs.createKeyMatcher || this.createKeyMatcher;
     this.resolveFromFieldMap = funs.resolveFromFieldMap || resolveFromFieldMap;
 
     this.functions = {
-      createKeyMatcher
+      createKeyMatcher: $createKeyMatcher
     };
 
     this.context = {
       functions: this.functions,
       type,
       field,
+      name: name || fieldName,
       typeName,
       fieldName,
       fieldType,
@@ -52,11 +57,11 @@ export class MapResolver extends BaseMapResolver {
     return this.resolveMap(this.typeFieldMap) || this.resolveMap(this.fieldMap);
   }
 
-  protected get createKeyMatcher() {
+  get createKeyMatcher() {
     return createKeyMatcher;
   }
 
-  protected resolveMap(map) {
+  resolveMap(map) {
     if (!map) {
       return null;
     }

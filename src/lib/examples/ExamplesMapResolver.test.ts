@@ -4,12 +4,13 @@ import { resolveExamples } from '.';
 // Allow `matches` list for both, using `resolveMatches`
 
 describe('resolveExample', () => {
+  const name = 'firstName';
   const field = {
-    name: 'firstName',
+    name,
     type: 'String'
   };
   const type = 'Person';
-  const example = resolveExamples({ field, type });
+  const example = resolveExamples({ field, name, type });
 
   describe('example', () => {
     test('is defined', () => {
@@ -36,14 +37,16 @@ describe('ExampleResolver', () => {
 });
 
 describe('resolveResult', () => {
+  const values = ['x', 'y'];
   const obj = {
     values: ['x', 'y']
   };
-  const values = resolveResult(obj);
+  const resolved = resolveResult(obj);
+  console.log('resolveResult', { values });
 
-  describe('values', () => {
-    test('is defined', () => {
-      expect(values).toBeDefined();
+  describe('resolved', () => {
+    test('is values', () => {
+      expect(resolved).toEqual(values);
     });
   });
 });

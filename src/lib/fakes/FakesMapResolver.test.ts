@@ -4,11 +4,13 @@ import { resolveFakes } from '.';
 // Allow `matches` list for both, using `resolveMatches`
 describe('resolveFake', () => {
   const type = 'Person';
+  const name = 'firstName';
   const field = {
     type: 'String',
-    name: 'firstName'
+    name
   };
-  const fake = resolveFakes({ type, field });
+  const fake = resolveFakes({ type, field, name });
+  console.log('resolveFakes', { fake });
   describe('fake', () => {
     test('is defined', () => {
       expect(fake).toBeDefined();
@@ -25,19 +27,66 @@ describe('resolveFake', () => {
         }
       }
     };
+    // should resolve to {faker: 'word', options: {}}
     const fields = ['firstName', 'lastName'];
 
     const fake = resolveFakes({ type, field, fields, config });
+    console.log('resolveFakes', { fake });
 
     describe('fake', () => {
-      test('is defined', () => {
-        expect(fake).toBeDefined();
+      test('is an object', () => {
+        expect(typeof fake).toEqual('object');
+      });
+
+      test.skip('has a faker', () => {
+        expect(fake.faker).toBeDefined();
+      });
+
+      test.skip('has options object', () => {
+        expect(typeof fake.options).toEqual('object');
       });
     });
   });
 });
 
-import { resolveResult } from './FakesMapResolver';
+import { resolveResult, isValidResult } from './FakesMapResolver';
+
+describe('isValidResult', () => {
+  const type = 'lorem';
+  const value = {
+    valid: type,
+    empty: null,
+    invalid: {
+      faker: ['x']
+    }
+  };
+  describe('valid', () => {
+    const isValid = isValidResult(value.valid);
+    console.log('isValidResult', isValid);
+
+    test('is valid', () => {
+      expect(isValid).toBe(true);
+    });
+  });
+
+  describe('empty', () => {
+    const isValid = isValidResult(value.empty);
+    console.log('isValidResult', isValid);
+
+    test('is invalid', () => {
+      expect(isValid).toBe(false);
+    });
+  });
+
+  describe('invalid', () => {
+    const isValid = isValidResult(value.invalid);
+    console.log('isValidResult', isValid);
+    test('is type', () => {
+      expect(isValid).toBe(false);
+    });
+  });
+});
+
 describe('resolveResult', () => {
   const type = 'lorem';
   const value = {
@@ -45,7 +94,7 @@ describe('resolveResult', () => {
   };
   const fakeObj = resolveResult({ value });
   const fakeType = fakeObj.faker.type;
-
+  console.log('resolveResult', { fakeObj, fakeType });
   describe('fakeType', () => {
     test('is type', () => {
       expect(fakeType).toEqual(type);

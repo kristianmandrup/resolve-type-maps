@@ -5,11 +5,13 @@ import { ExamplesMapResolver } from './ExamplesMapResolver';
 export const resolveExamples = ({
   field,
   type,
+  name,
   fields = [],
   config = {}
 }: any): string => {
   const resolved = new ExamplesMapResolver({
     field,
+    name,
     type,
     fields,
     config

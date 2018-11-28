@@ -1,11 +1,12 @@
-import { MapResolver } from "../MapResolver";
+import { MapResolver } from '../MapResolver';
 
 export const isValidResult = value => {
-  return typeof value === "string" || value.faker;
+  if (!value) return false;
+  const testVal = value.faker || value;
+  return Boolean(typeof testVal === 'string');
 };
 
-export const resolveResult = ({ value, key }: any = {}) => {
-  key = key || value;
+export const resolveResult = ({ value, key = value }: any = {}) => {
   const $default = { faker: key, options: {} };
   if (value.faker) {
     return { faker: value.faker, options: value.options || {} };
@@ -15,7 +16,7 @@ export const resolveResult = ({ value, key }: any = {}) => {
 
 export class FakesMapResolver extends MapResolver {
   constructor(ctx = {}, config = {}) {
-    super("fakes", ctx, config);
+    super('fakes', ctx, config);
     this.functions = {
       ...this.functions,
       // TODO: make configurable?
