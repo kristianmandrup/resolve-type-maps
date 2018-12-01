@@ -1,46 +1,49 @@
-import { BaseMapResolver } from "./BaseMapResolver";
+import { BaseMapResolver } from './BaseMapResolver';
 
 // re-align `typeFieldMap` and `fieldMap` (resolve examples and fakes), using a generic `resultResolver`.
 // Allow `matches` list for both, using `resolveMatches`
-describe("BaseMapResolver", () => {
+describe('BaseMapResolver', () => {
   const ctx: any = {};
+  const resMaps = {
+    fakes: {
+      resolveResult: () => 1
+    }
+  };
+  const maps = {
+    fakes: {
+      x: 1
+    },
+    examples: {
+      x: 2
+    }
+  };
+
   const config = {
     resolvers: {
-      maps: {
-        fakes: {
-          resolveResult: () => 1
-        }
-      }
+      maps: resMaps
     },
-    maps: {
-      fakes: {
-        x: 1
-      },
-      examples: {
-        x: 2
-      }
-    }
+    maps
   };
   const resolver = new BaseMapResolver(ctx, config);
 
-  describe("resolversMap", () => {
+  describe('resolversMap', () => {
     const { resolversMap } = resolver;
-    test("is defined", () => {
-      expect(resolversMap).toBeDefined();
+    test('is defined', () => {
+      expect(resolversMap).toBe(resMaps);
     });
   });
 
-  describe("mapsFor", () => {
-    const fakes = resolver.mapsFor("fakes");
-    test("fakes", () => {
+  describe('mapsFor', () => {
+    const fakes = resolver.mapsFor('fakes');
+    test('fakes', () => {
       expect(fakes.x).toBe(1);
     });
   });
 
-  describe("funsFor", () => {
-    const fakes = resolver.funsFor("fakes");
-    test("fakes", () => {
-      expect(typeof fakes.resolveResult).toEqual("function");
+  describe('funsFor', () => {
+    const fakes = resolver.funsFor('fakes');
+    test('fakes', () => {
+      expect(typeof fakes.resolveResult).toEqual('function');
     });
   });
 });

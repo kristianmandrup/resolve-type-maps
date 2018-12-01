@@ -6,9 +6,9 @@ const resolveResult = obj => obj;
 describe('EntryMatcher', () => {
   const ctx: any = {
     valid: {
+      mapName: 'fakes',
       name: 'label',
       functions: {
-        resolveResult,
         createKeyMatcher: () => ({})
       }
     },
@@ -19,6 +19,13 @@ describe('EntryMatcher', () => {
   };
 
   const config = {
+    resolvers: {
+      maps: {
+        fakes: {
+          resolveResult
+        }
+      }
+    },
     maps: {
       fakes,
       examples
@@ -30,7 +37,7 @@ describe('EntryMatcher', () => {
   describe('new', () => {
     // let sub classes take care of assigning default functions as needed
     test('no functions: ok', () => {
-      expect(() => new EntryMatcher(ctx.noFunctions, config)).not.toThrow();
+      expect(() => new EntryMatcher(ctx.noFunctions, config)).toThrow();
     });
 
     test('valid ctx does not throw', () => {
@@ -72,14 +79,6 @@ describe('EntryMatcher', () => {
           value: 2
         }
       };
-
-      describe('missing name', () => {
-        const entryMatcher = new EntryMatcher(ctx.empty, config);
-        test('throws', () => {
-          expect(() => entryMatcher.matchResult(obj, matches)).toThrow();
-        });
-      });
-
       const result = entryMatcher.matchResult(obj, matches);
       test('result matched', () => {
         expect(result).toBeDefined();

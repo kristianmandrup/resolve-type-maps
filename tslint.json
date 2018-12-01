@@ -9,13 +9,13 @@
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-this-assignment": false,
+    "no-parameter-reassignment": false,
     "no-shadowed-variable": false,
     "no-console": false,
     "member-access": false,
     "no-submodule-imports": false,
     /* tslint-immutable rules */
     // Recommended built-in rules
-    "no-var-keyword": true,
-    "no-parameter-reassignment": true
+    "no-var-keyword": true
   }
 }

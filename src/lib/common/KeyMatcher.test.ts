@@ -15,6 +15,7 @@ const functions = {
 describe('FieldMap', () => {
   const ctx: any = {
     valid: {
+      mapName: 'fakes',
       name: 'label',
       functions
     },
@@ -168,16 +169,15 @@ describe('createKeyMatcher', () => {
     });
   });
 
-  describe.only('resolver', () => {
-    const resolve = keyMatcher.resolver;
+  describe.only('resolve', () => {
     test('resolves existing key to value', () => {
-      const resolved = resolve('label');
+      const resolved = keyMatcher.resolve('label');
       console.log({ resolved });
       expect(resolved).toEqual('name');
     });
 
     test('resolves unknown key to unknown (default if not match)', () => {
-      const resolved = resolve('unknown');
+      const resolved = keyMatcher.resolve('unknown');
       expect(resolved).toEqual('unknown');
     });
   });

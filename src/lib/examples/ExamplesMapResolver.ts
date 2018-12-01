@@ -1,3 +1,4 @@
+import * as maps from '../maps';
 import { MapResolver } from '../MapResolver';
 
 export const isValidResult = Array.isArray;
@@ -9,7 +10,10 @@ export const resolveResult = obj => {
 
 export class ExamplesMapResolver extends MapResolver {
   constructor(ctx = {}, config = {}) {
-    super('examples', ctx, config);
+    super('examples', ctx, {
+      maps,
+      ...config
+    });
     this.functions = {
       ...this.functions,
       isValidResult,

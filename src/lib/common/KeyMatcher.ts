@@ -4,8 +4,11 @@ export function createKeyMatcher(ctx: any, config: any = {}) {
   return new KeyMatcher(ctx, config);
 }
 
-export function createKeyResolver(ctx: any, config: any = {}) {
-  return createKeyMatcher(ctx, config).resolver;
+export function createKeyResolver(
+  ctx: any,
+  config: any = {}
+): (key: string) => string {
+  return createKeyMatcher(ctx, config).resolve;
 }
 
 const lower = (str: string) => str.toLowerCase();
@@ -38,34 +41,33 @@ export class KeyMatcher extends EntryMatcher {
   resolveObj(obj: any = {}) {
     const { fieldType } = this;
     // allow more fine grained mapping on type of field
+    const typeClass = capitalize(fieldType);
+    const typeName = lower(fieldType);
+
     return (
       obj[fieldType] ||
-      obj[lower(fieldType)] ||
-      obj[capitalize(fieldType)] ||
+      obj[typeName] ||
+      obj[typeClass] ||
       obj.default ||
       obj.any ||
       obj
     );
   }
 
-  get resolver() {
-    let result;
+  resolve = key => {
     const { isValidResult, fieldMap } = this;
-    return key => {
-      let matches;
-      let obj = fieldMap[key];
-      obj = this.resolveObj(obj);
-      if (isValidResult(obj)) {
-        result = obj;
-        return key;
-      }
+    let matches;
+    let obj = fieldMap[key];
+    obj = this.resolveObj(obj);
+    if (!isValidResult(obj)) {
+      return false;
+    }
 
-      matches = matches || this.resolveMatches(obj, { key });
-      this.validateMatches(matches, key, obj);
+    matches = matches || this.resolveMatches(obj, { key });
+    this.validateMatches(matches, key, obj);
 
-      result = this.matchResult(obj, matches);
-    };
-  }
+    return this.matchResult(obj, matches);
+  };
 
   resolveMatches(obj, { key }) {
     if (typeof obj === 'string') {

@@ -9,12 +9,20 @@ describe('MapResolver', () => {
     type: 'String',
     name
   };
+  const fieldMap = {
+    word: ['firstName']
+  };
+  const typeMap = {
+    Person: {
+      name: 'firstName'
+    }
+  };
+
   const config = {
     maps: {
       fakes: {
-        fieldMap: {
-          word: ['firstName']
-        }
+        fieldMap,
+        typeMap
       }
     }
   };
@@ -26,17 +34,17 @@ describe('MapResolver', () => {
       expect(resolver).toBeDefined();
     });
 
-    describe('fieldMap', () => {
+    describe.only('fieldMap', () => {
       const { fieldMap } = resolver;
-      test('is defined', () => {
-        expect(fieldMap).toBeDefined();
+      test('is the fieldMap of maps', () => {
+        expect(fieldMap).toBe(fieldMap);
       });
     });
 
-    describe('typeMap', () => {
+    describe.only('typeMap', () => {
       const { typeFieldMap } = resolver;
-      test('is not defined', () => {
-        expect(typeFieldMap).not.toBeDefined();
+      test('is the typeMap of maps', () => {
+        expect(typeFieldMap).toBe(typeMap);
       });
     });
 

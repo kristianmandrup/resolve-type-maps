@@ -1,4 +1,3 @@
-import * as maps from './maps';
 import { BaseMapResolver } from './common/BaseMapResolver';
 import { resolveFromFieldMap } from './common/FieldMap';
 import { createKeyMatcher } from './common/KeyMatcher';
@@ -23,14 +22,9 @@ export class MapResolver extends BaseMapResolver {
     const fieldName = field.name;
     const fieldType = field.type;
 
-    const confMap = this.mapsFor(confName, maps);
+    this.init(confName, { maps: config.maps, typeName, fieldName });
+
     const funs = this.funsFor(confName);
-
-    const typeMap = confMap.typeMap || {};
-    this.fieldMap = confMap.fieldMap || {};
-
-    const typeMapForName = typeMap[typeName] || {};
-    this.typeFieldMap = typeMapForName[fieldName];
 
     const $createKeyMatcher = funs.createKeyMatcher || this.createKeyMatcher;
     this.resolveFromFieldMap = funs.resolveFromFieldMap || resolveFromFieldMap;
@@ -51,6 +45,16 @@ export class MapResolver extends BaseMapResolver {
       error,
       log
     };
+  }
+
+  init(name, { maps, typeName, fieldName }) {
+    const confMap = this.mapsFor(name, maps);
+
+    const typeMap = confMap.typeMap || {};
+    this.fieldMap = confMap.fieldMap || {};
+
+    const typeMapForName = typeMap[typeName] || {};
+    this.typeFieldMap = typeMapForName[fieldName];
   }
 
   resolve() {

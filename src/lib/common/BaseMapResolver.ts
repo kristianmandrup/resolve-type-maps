@@ -3,6 +3,7 @@ import { Base } from '../Base';
 export class BaseMapResolver extends Base {
   ctx: any;
   functions: any;
+  resolvers: any;
 
   constructor(ctx: any = {}, config = {}) {
     super(config);

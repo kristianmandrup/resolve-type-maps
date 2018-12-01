@@ -1,3 +1,4 @@
+import * as maps from '../maps';
 import { MapResolver } from '../MapResolver';
 
 export const isValidResult = value => {
@@ -16,7 +17,10 @@ export const resolveResult = ({ value, key = value }: any = {}) => {
 
 export class FakesMapResolver extends MapResolver {
   constructor(ctx = {}, config = {}) {
-    super('fakes', ctx, config);
+    super('fakes', ctx, {
+      maps,
+      ...config
+    });
     this.functions = {
       ...this.functions,
       // TODO: make configurable?
