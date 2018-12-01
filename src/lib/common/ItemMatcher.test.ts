@@ -23,4 +23,24 @@ describe('ItemMatcher', () => {
       expect(regExp.test('hello')).toBeTruthy();
     });
   });
+
+  describe('match/resolveMatchItem', () => {
+    const matched = itemMatcher.resolveMatchItem();
+    test('matches', () => {
+      expect(matched).toBeTruthy();
+    });
+  });
+
+  describe('resolveMatchFn', () => {
+    const matched = itemMatcher.resolveMatchFn();
+    test('matches', () => {
+      expect(matched).toBeTruthy();
+    });
+  });
+  describe('resolveStringOrRegExp', () => {
+    const matched = itemMatcher.resolveStringOrRegExp();
+    test('matches', () => {
+      expect(matched).toBeTruthy();
+    });
+  });
 });

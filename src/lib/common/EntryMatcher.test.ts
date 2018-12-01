@@ -86,7 +86,7 @@ describe('EntryMatcher', () => {
       });
     });
 
-    describe('matchName', () => {
+    describe('findMatch', () => {
       const matches = ['label', 'caption'];
       const matched = entryMatcher.findMatch(matches);
 

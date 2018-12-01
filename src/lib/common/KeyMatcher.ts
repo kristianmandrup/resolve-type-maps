@@ -65,7 +65,6 @@ export class KeyMatcher extends EntryMatcher {
 
       result = this.matchResult(obj, matches);
     };
-    return result;
   }
 
   resolveMatches(obj, { key }) {

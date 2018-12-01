@@ -1,11 +1,16 @@
-import { FieldMap, resolveFromFieldMap } from "./FieldMap";
+import { FieldMap, resolveFromFieldMap } from './FieldMap';
+const fieldMap = {
+  name: {}
+};
 
 const ctx: any = {
   valid: {
     functions: {
-      createKeyMatcher: () => ({})
+      createKeyMatcher: () => {
+        return key => key;
+      }
     },
-    fieldMap: {}
+    fieldMap
   },
   invalid: {},
   missingFunctions: {
@@ -19,54 +24,56 @@ const config = {
   resolvers: {
     maps: {
       fakes: {
-        resolveResult: () => 1
+        resolveResult: () => ({ faker: 'x', options: {} })
       }
     }
   },
   maps: {
     fakes: {
-      x: 1
+      word: ['label', 'caption']
     },
     examples: {
-      x: 2
+      name: ['john', 'jack']
     }
   }
 };
-describe("FieldMap", () => {
-  describe("new", () => {
-    test("missing functions throws", () => {
+describe('FieldMap', () => {
+  describe('new', () => {
+    test('missing functions throws', () => {
       expect(() => new FieldMap(ctx.missingFunctions, config)).toThrow();
     });
 
-    test("missing fieldMap throws", () => {
+    test('missing fieldMap throws', () => {
       expect(() => new FieldMap(ctx.missingFieldMap, config)).toThrow();
     });
 
-    test("valid ctx does not throw", () => {
+    test('valid ctx does not throw', () => {
       expect(() => new FieldMap(ctx.valid, config)).not.toThrow();
     });
   });
 
-  describe("instance", () => {
+  describe('instance', () => {
     const fieldMap = new FieldMap(ctx.valid, config);
-    test("defined", () => {
+    test('defined', () => {
       expect(fieldMap).toBeDefined();
     });
 
-    describe("resolve", () => {
+    describe('resolve', () => {
       const resolved = fieldMap.resolve();
+      // console.log('resolve', resolved);
 
-      test("resolved", () => {
-        expect(resolved).toBeDefined();
+      test('resolved', () => {
+        expect(resolved).toEqual('name');
       });
     });
   });
 });
 
-describe("resolveFromFieldMap", () => {
-  const resolved = resolveFromFieldMap(ctx.valid);
+describe('resolveFromFieldMap', () => {
+  const resolved = resolveFromFieldMap(ctx.valid, config);
+  // console.log('resolveFromFieldMap', resolved);
 
-  test("resolved", () => {
-    expect(resolved).toBeDefined();
+  test('resolved', () => {
+    expect(resolved).toEqual('name');
   });
 });

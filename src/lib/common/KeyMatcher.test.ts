@@ -39,12 +39,12 @@ describe('FieldMap', () => {
     }
   };
 
-  describe.only('new', () => {
+  describe('new', () => {
     test('invalid ctx throws', () => {
       expect(() => new KeyMatcher(ctx.invalid, config)).toThrow();
     });
 
-    test.only('valid ctx does not throw', () => {
+    test('valid ctx does not throw', () => {
       expect(() => new KeyMatcher(ctx.valid, config)).not.toThrow();
     });
   });
@@ -67,13 +67,18 @@ describe('createKeyMatcher', () => {
   //   type: "String",
   //   name: "firstName"
   // };
-
-  const fieldMap = {
-    x: 2
-  };
   const fieldType = 'string';
+  const fieldMap = {
+    name: {
+      matches: ['label', 'caption']
+    }
+  };
+
   const typeName = 'Person';
+  const fieldName = 'name';
   const ctx: any = {
+    fieldName,
+    name: fieldName,
     fieldMap,
     fieldType,
     typeName,
@@ -96,6 +101,20 @@ describe('createKeyMatcher', () => {
 
     test('isValidResult', () => {
       expect(keyMatcher.isValidResult).toBe(isValidResult);
+    });
+  });
+
+  describe('resolveMatches', () => {
+    const key = 'name';
+    const obj = {
+      string: {
+        value: 32
+      }
+    };
+    const matches = keyMatcher.resolveMatches(obj, { key });
+    console.log({ matches });
+    test('matches', () => {
+      expect(matches).toEqual([]);
     });
   });
 
@@ -149,16 +168,17 @@ describe('createKeyMatcher', () => {
     });
   });
 
-  describe('resolver', () => {
+  describe.only('resolver', () => {
     const resolve = keyMatcher.resolver;
     test('resolves existing key to value', () => {
-      const value = resolve('x');
-      expect(value).toBeDefined();
+      const resolved = resolve('label');
+      console.log({ resolved });
+      expect(resolved).toEqual('name');
     });
 
     test('resolves unknown key to unknown (default if not match)', () => {
-      const value = resolve('unknown');
-      expect(value).toEqual('unknown');
+      const resolved = resolve('unknown');
+      expect(resolved).toEqual('unknown');
     });
   });
 });

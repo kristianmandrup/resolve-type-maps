@@ -48,8 +48,17 @@ describe('MapResolver', () => {
     });
 
     describe('resolveMap', () => {
+      // todo: what map?
       const map = {};
       const resolved = resolver.resolveMap(map);
+      test('resolved: is defined', () => {
+        expect(resolved).toBeDefined();
+      });
+    });
+
+    describe('resolve', () => {
+      // check FieldMap in common
+      const resolved = resolver.resolve();
       test('resolved: is defined', () => {
         expect(resolved).toBeDefined();
       });
