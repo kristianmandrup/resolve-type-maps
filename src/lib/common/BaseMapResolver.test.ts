@@ -22,6 +22,13 @@ describe('BaseMapResolver', () => {
     resolvers: {
       maps: resMaps
     },
+    factories: {
+      maps: {
+        fakes: {
+          createKeyMatcher: () => 1
+        }
+      }
+    },
     maps
   };
   const resolver = new BaseMapResolver(ctx, config);
@@ -40,10 +47,17 @@ describe('BaseMapResolver', () => {
     });
   });
 
-  describe('funsFor', () => {
-    const fakes = resolver.funsFor('fakes');
-    test('fakes', () => {
-      expect(typeof fakes.resolveResult).toEqual('function');
+  describe('resolversFor', () => {
+    const resolvers = resolver.resolversFor('fakes');
+    test('resolvers', () => {
+      expect(typeof resolvers.resolveResult).toEqual('function');
+    });
+  });
+
+  describe('factoriesFor', () => {
+    const factories = resolver.factoriesFor('fakes');
+    test('factories', () => {
+      expect(typeof factories.createKeyMatcher).toEqual('function');
     });
   });
 });

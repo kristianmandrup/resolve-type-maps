@@ -42,7 +42,7 @@ describe('resolveResult', () => {
     values: ['x', 'y']
   };
   const resolved = resolveResult(obj);
-  console.log('resolveResult', { values });
+  // console.log('resolveResult', { values });
 
   describe('resolved', () => {
     test('is values', () => {

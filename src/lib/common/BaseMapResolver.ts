@@ -17,12 +17,21 @@ export class BaseMapResolver extends Base {
     return resolvers.maps || {};
   }
 
+  get factoriesMap() {
+    const factories = this.config.factories || {};
+    return factories.maps || {};
+  }
+
   mapsFor(name, defaultMap = {}) {
     const maps = this.config.maps || {};
     return maps[name] || defaultMap || {};
   }
 
-  funsFor(name) {
+  resolversFor(name) {
     return this.resolversMap[name] || {};
+  }
+
+  factoriesFor(name) {
+    return this.factoriesMap[name] || {};
   }
 }

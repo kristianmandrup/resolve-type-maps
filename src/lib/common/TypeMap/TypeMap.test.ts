@@ -2,6 +2,7 @@ import { TypeMap } from './TypeMap';
 
 describe('TypeMap', () => {
   const ctx: any = {
+    mapName: 'fakes',
     name: 'label'
   };
   const config = {

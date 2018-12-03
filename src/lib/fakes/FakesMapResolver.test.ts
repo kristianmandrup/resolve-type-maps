@@ -10,7 +10,7 @@ describe('resolveFake', () => {
     name
   };
   const fake = resolveFakes({ type, field, name });
-  console.log('resolveFakes', { fake });
+  // console.log('resolveFakes', { fake });
   describe('fake', () => {
     test('is defined', () => {
       expect(fake).toBeDefined();
@@ -31,7 +31,7 @@ describe('resolveFake', () => {
     const fields = ['firstName', 'lastName'];
 
     const fake = resolveFakes({ type, field, fields, config });
-    console.log('resolveFakes', { fake });
+    // console.log('resolveFakes', { fake });
 
     describe('fake', () => {
       test('is an object', () => {
@@ -62,7 +62,7 @@ describe('isValidResult', () => {
   };
   describe('valid', () => {
     const isValid = isValidResult(value.valid);
-    console.log('isValidResult', isValid);
+    // console.log('isValidResult', isValid);
 
     test('is valid', () => {
       expect(isValid).toBe(true);
@@ -71,7 +71,7 @@ describe('isValidResult', () => {
 
   describe('empty', () => {
     const isValid = isValidResult(value.empty);
-    console.log('isValidResult', isValid);
+    // console.log('isValidResult', isValid);
 
     test('is invalid', () => {
       expect(isValid).toBe(false);
@@ -80,7 +80,7 @@ describe('isValidResult', () => {
 
   describe('invalid', () => {
     const isValid = isValidResult(value.invalid);
-    console.log('isValidResult', isValid);
+    // console.log('isValidResult', isValid);
     test('is type', () => {
       expect(isValid).toBe(false);
     });
@@ -94,7 +94,7 @@ describe('resolveResult', () => {
   };
   const fakeObj = resolveResult({ value });
   const fakeType = fakeObj.faker.type;
-  console.log('resolveResult', { fakeObj, fakeType });
+  // console.log('resolveResult', { fakeObj, fakeType });
   describe('fakeType', () => {
     test('is type', () => {
       expect(fakeType).toEqual(type);

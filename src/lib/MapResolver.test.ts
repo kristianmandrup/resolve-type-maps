@@ -12,10 +12,12 @@ describe('MapResolver', () => {
   const fieldMap = {
     word: ['firstName']
   };
+  const personFieldMap = {
+    name: 'firstName'
+  };
+
   const typeMap = {
-    Person: {
-      name: 'firstName'
-    }
+    Person: personFieldMap
   };
 
   const config = {
@@ -24,27 +26,35 @@ describe('MapResolver', () => {
         fieldMap,
         typeMap
       }
+    },
+    resolvers: {
+      maps: {
+        fakes: {
+          resolveResult: () => 1,
+          isValidResult: () => true
+        }
+      }
     }
   };
 
   const resolver = new MapResolver('fakes', { type, field, name }, config);
-  console.log({ resolver });
+  // console.log({ resolver });
   describe('instance', () => {
     test('is defined', () => {
       expect(resolver).toBeDefined();
     });
 
-    describe.only('fieldMap', () => {
+    describe('fieldMap', () => {
       const { fieldMap } = resolver;
       test('is the fieldMap of maps', () => {
         expect(fieldMap).toBe(fieldMap);
       });
     });
 
-    describe.only('typeMap', () => {
+    describe('typeMap', () => {
       const { typeFieldMap } = resolver;
       test('is the typeMap of maps', () => {
-        expect(typeFieldMap).toBe(typeMap);
+        expect(typeFieldMap).toBe(personFieldMap);
       });
     });
 

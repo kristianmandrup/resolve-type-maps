@@ -30,7 +30,17 @@ export class KeyMatcher extends EntryMatcher {
       this.error('missing functions entry on context');
     }
     this.functions = functions;
+    // TODO: extract directly from ctx
     const { isValidResult } = functions;
+    if (typeof isValidResult !== 'function') {
+      this.error('isValidResult is not a function', {
+        isValidResult,
+        functions,
+        ctx,
+        config
+      });
+    }
+
     this.isValidResult = isValidResult;
 
     this.fieldMap = fieldMap;

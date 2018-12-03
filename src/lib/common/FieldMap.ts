@@ -17,8 +17,14 @@ export class FieldMap extends Base {
   // log
   fieldMap: any;
   ctx: any;
-  createKeyMatcher: (ctx: any) => (ctx: any) => string | null;
-  matchKey: (key: string) => any;
+  createKeyMatcher: (
+    ctx: any,
+    config: any
+  ) => {
+    resolve: (key: string) => string | null;
+  };
+  createKeyResolver: (ctx: any, config: any) => (key: string) => string | null;
+  resolveKey: (key: string) => any;
 
   constructor(ctx: any, config = {}) {
     super(config);
@@ -30,49 +36,49 @@ export class FieldMap extends Base {
     if (!fieldMap) {
       this.error('missing fieldMap');
     }
-    const { createKeyMatcher } = functions;
-    if (typeof createKeyMatcher !== 'function') {
-      this.error('Invalid createKeyMatcher. Must be a function', {
-        createKeyMatcher,
+    const { createKeyResolver, createKeyMatcher } = functions;
+    if (typeof createKeyResolver !== 'function') {
+      this.error('Invalid createKeyResolver. Must be a function', {
+        createKeyResolver,
         functions,
         ctx
       });
     }
-    this.createKeyMatcher = createKeyMatcher;
-
-    const matchKey = this.createKeyMatcher(this.ctx);
-    if (typeof matchKey !== 'function') {
-      this.error('Invalid matchKey. Must be a function', {
-        matchKey,
+    const resolveKey = createKeyResolver
+      ? createKeyResolver(this.ctx, this.config)
+      : createKeyMatcher(ctx, config).resolve;
+    if (typeof resolveKey !== 'function') {
+      this.error('Invalid resolveKey. Must be a function', {
+        resolveKey,
         ctx
       });
     }
 
     this.fieldMap = fieldMap;
-
-    this.matchKey = matchKey;
+    this.resolveKey = resolveKey;
   }
 
   resolve() {
-    this.validateFunction({
-      method: 'resolve',
-      data: {
-        config: this.config
-      },
-      func: this.createKeyMatcher,
-      functionName: 'createKeyMatcher',
-      error: this.error
-    });
+    // this.validateFunction({
+    //   method: 'resolve',
+    //   data: {
+    //     config: this.config
+    //   },
+    //   func: this.createKeyMatcher,
+    //   functionName: 'createKeyMatcher',
+    //   error: this.error
+    // });
 
     const keys = Object.keys(this.fieldMap);
     if (keys.length === 0) {
       this.warn('no keys in fieldMap', {
         fieldMap: this.fieldMap
       });
+      return null;
     }
     let result;
     const key = keys.find(key => {
-      result = this.matchKey(key);
+      result = this.resolveKey(key);
       return Boolean(result);
     });
     return key ? result : null;

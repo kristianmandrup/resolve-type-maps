@@ -6,7 +6,7 @@ const fieldMap = {
 const ctx: any = {
   valid: {
     functions: {
-      createKeyMatcher: () => {
+      createKeyResolver: () => {
         return key => key;
       }
     },
@@ -60,8 +60,6 @@ describe('FieldMap', () => {
 
     describe('resolve', () => {
       const resolved = fieldMap.resolve();
-      // console.log('resolve', resolved);
-
       test('resolved', () => {
         expect(resolved).toEqual('name');
       });

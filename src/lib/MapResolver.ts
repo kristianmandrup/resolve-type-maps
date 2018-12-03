@@ -1,6 +1,6 @@
 import { BaseMapResolver } from './common/BaseMapResolver';
 import { resolveFromFieldMap } from './common/FieldMap';
-import { createKeyMatcher } from './common/KeyMatcher';
+import { createKeyMatcher, createKeyResolver } from './common/KeyMatcher';
 
 export class MapResolver extends BaseMapResolver {
   fieldMap: any;
@@ -8,8 +8,9 @@ export class MapResolver extends BaseMapResolver {
   typeFieldMap: any;
   resolveFromFieldMap: (ctx, config?) => any;
   functions: any;
+  mapName: string;
 
-  constructor(confName, ctx: any = {}, config: any = {}) {
+  constructor(mapName, ctx: any = {}, config: any = {}) {
     super(ctx, config);
     const { type, field, name } = ctx;
     const error = config.error;
@@ -22,18 +23,26 @@ export class MapResolver extends BaseMapResolver {
     const fieldName = field.name;
     const fieldType = field.type;
 
-    this.init(confName, { maps: config.maps, typeName, fieldName });
+    this.init(mapName, { maps: config.maps, typeName });
+    this.mapName = mapName;
+    const resolvers = this.resolversFor(mapName);
+    const factories = this.resolversFor(mapName);
 
-    const funs = this.funsFor(confName);
-
-    const $createKeyMatcher = funs.createKeyMatcher || this.createKeyMatcher;
-    this.resolveFromFieldMap = funs.resolveFromFieldMap || resolveFromFieldMap;
+    const createKeyMatcher =
+      factories.createKeyMatcher || this.createKeyMatcher;
+    const createKeyResolver =
+      factories.createKeyResolver || this.createKeyResolver;
+    this.resolveFromFieldMap =
+      resolvers.resolveFromFieldMap || resolveFromFieldMap;
 
     this.functions = {
-      createKeyMatcher: $createKeyMatcher
+      createKeyMatcher,
+      createKeyResolver,
+      ...resolvers
     };
 
     this.context = {
+      mapName,
       functions: this.functions,
       type,
       field,
@@ -47,14 +56,17 @@ export class MapResolver extends BaseMapResolver {
     };
   }
 
-  init(name, { maps, typeName, fieldName }) {
+  init(name, { maps, typeName }) {
     const confMap = this.mapsFor(name, maps);
 
+    this.functions = {
+      ...this.functions
+    };
     const typeMap = confMap.typeMap || {};
     this.fieldMap = confMap.fieldMap || {};
 
-    const typeMapForName = typeMap[typeName] || {};
-    this.typeFieldMap = typeMapForName[fieldName];
+    const typeFieldMap = typeMap[typeName] || {};
+    this.typeFieldMap = typeFieldMap;
   }
 
   resolve() {
@@ -65,13 +77,20 @@ export class MapResolver extends BaseMapResolver {
     return createKeyMatcher;
   }
 
+  get createKeyResolver() {
+    return createKeyResolver;
+  }
+
   resolveMap(map) {
     if (!map) {
       return null;
     }
-    return this.resolveFromFieldMap({
-      fieldMap: map,
-      ...this.context
-    });
+    return this.resolveFromFieldMap(
+      {
+        fieldMap: map,
+        ...this.context
+      },
+      this.config
+    );
   }
 }

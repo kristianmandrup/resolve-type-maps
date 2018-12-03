@@ -2,24 +2,40 @@ import * as path from 'path';
 
 export class Base {
   config: any;
-  log: (...args) => void;
+  className: string;
 
   constructor(config) {
     this.config = config;
     if (this.isEnabled('logging')) {
       config.log = config.log || console.log;
     }
-    this.log = config.log;
+    if (config.log) {
+      this.log = config.log;
+    }
+    this.className = this.constructor.name;
   }
 
-  warn(msg, data?) {
-    data ? console.error(msg, data) : console.error(msg);
+  get label() {
+    return `[${this.className}]`;
   }
 
-  error(msg, data?) {
+  log = (msg, data?) => {
+    data
+      ? console.error(this.label, msg, data)
+      : console.error(this.label, msg);
+  };
+
+  warn = (msg, data?) => {
+    data
+      ? console.error(this.label, msg, data)
+      : console.error(this.label, msg);
+  };
+
+  error = (msg, data?) => {
+    msg = [this.label, msg].join(' ');
     data ? console.error(msg, data) : console.error(msg);
     throw new Error(msg);
-  }
+  };
 
   isEnabled(name) {
     const enabled = this.config.enable || {};

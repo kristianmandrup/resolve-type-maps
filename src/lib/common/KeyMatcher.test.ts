@@ -78,6 +78,7 @@ describe('createKeyMatcher', () => {
   const typeName = 'Person';
   const fieldName = 'name';
   const ctx: any = {
+    mapName: 'fakes',
     fieldName,
     name: fieldName,
     fieldMap,
@@ -113,7 +114,7 @@ describe('createKeyMatcher', () => {
       }
     };
     const matches = keyMatcher.resolveMatches(obj, { key });
-    console.log({ matches });
+    // console.log({ matches });
     test('matches', () => {
       expect(matches).toEqual([]);
     });
@@ -172,7 +173,7 @@ describe('createKeyMatcher', () => {
   describe.only('resolve', () => {
     test('resolves existing key to value', () => {
       const resolved = keyMatcher.resolve('label');
-      console.log({ resolved });
+      // console.log({ resolved });
       expect(resolved).toEqual('name');
     });
 
