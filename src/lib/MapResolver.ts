@@ -16,10 +16,12 @@ export class MapResolver extends BaseMapResolver {
     const error = config.error;
     const log = config.log || console.log;
     const typeName = typeof type === 'string' ? type : type.name;
+
     if (!field) {
       this.error('missing field in ctx', ctx);
     }
 
+    const functions = ctx.functions || {};
     const fieldName = field.name;
     const fieldType = field.type;
 
@@ -28,16 +30,13 @@ export class MapResolver extends BaseMapResolver {
     const resolvers = this.resolversFor(mapName);
     const factories = this.resolversFor(mapName);
 
-    const createKeyMatcher =
-      factories.createKeyMatcher || this.createKeyMatcher;
-    const createKeyResolver =
-      factories.createKeyResolver || this.createKeyResolver;
     this.resolveFromFieldMap =
       resolvers.resolveFromFieldMap || resolveFromFieldMap;
 
     this.functions = {
-      createKeyMatcher,
-      createKeyResolver,
+      ...functions,
+      ...this.defaultFactories,
+      ...factories,
       ...resolvers
     };
 
@@ -57,7 +56,7 @@ export class MapResolver extends BaseMapResolver {
   }
 
   init(name, { maps, typeName }) {
-    const confMap = this.mapsFor(name, maps);
+    const confMap = this.mapsDataFor(name, maps);
 
     this.functions = {
       ...this.functions
@@ -73,12 +72,11 @@ export class MapResolver extends BaseMapResolver {
     return this.resolveMap(this.typeFieldMap) || this.resolveMap(this.fieldMap);
   }
 
-  get createKeyMatcher() {
-    return createKeyMatcher;
-  }
-
-  get createKeyResolver() {
-    return createKeyResolver;
+  get defaultFactories() {
+    return {
+      createKeyMatcher,
+      createKeyResolver
+    };
   }
 
   resolveMap(map) {

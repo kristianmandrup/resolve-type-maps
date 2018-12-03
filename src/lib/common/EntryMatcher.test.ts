@@ -9,7 +9,8 @@ describe('EntryMatcher', () => {
       mapName: 'fakes',
       name: 'label',
       functions: {
-        createKeyMatcher: () => ({})
+        createKeyMatcher: () => ({}),
+        resolveResult
       }
     },
     noFunctions: {
@@ -19,16 +20,11 @@ describe('EntryMatcher', () => {
   };
 
   const config = {
-    resolvers: {
-      maps: {
-        fakes: {
-          resolveResult
-        }
-      }
-    },
     maps: {
-      fakes,
-      examples
+      data: {
+        fakes,
+        examples
+      }
     }
   };
 

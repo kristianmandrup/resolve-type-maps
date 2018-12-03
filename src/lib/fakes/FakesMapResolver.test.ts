@@ -10,7 +10,6 @@ describe('resolveFake', () => {
     name
   };
   const fake = resolveFakes({ type, field, name });
-  // console.log('resolveFakes', { fake });
   describe('fake', () => {
     test('is defined', () => {
       expect(fake).toBeDefined();

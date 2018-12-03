@@ -4,11 +4,13 @@ import { createKeyMatcher, KeyMatcher } from './KeyMatcher';
 // Allow `matches` list for both, using `resolveMatches`
 
 const isValidResult = (_: any) => true;
+const resolveResult = obj => obj;
 
 const functions = {
   invalid: {},
   valid: {
-    isValidResult
+    isValidResult,
+    resolveResult
   }
 };
 
@@ -23,19 +25,16 @@ describe('FieldMap', () => {
   };
 
   const config = {
-    resolvers: {
-      maps: {
-        fakes: {
-          resolveResult: () => 1
-        }
-      }
-    },
     maps: {
       fakes: {
-        x: 1
+        data: {
+          x: 1
+        }
       },
       examples: {
-        x: 2
+        data: {
+          x: 2
+        }
       }
     }
   };
@@ -154,8 +153,8 @@ describe('createKeyMatcher', () => {
         }
       };
       const valueObj = keyMatcher.resolveObj(obj);
-      test('resolves existing key to value', () => {
-        expect(valueObj.value).toBe(value);
+      test('resolves default key to value', () => {
+        expect(valueObj.value).toEqual(32);
       });
     });
 
@@ -179,7 +178,7 @@ describe('createKeyMatcher', () => {
 
     test('resolves unknown key to unknown (default if not match)', () => {
       const resolved = keyMatcher.resolve('unknown');
-      expect(resolved).toEqual('unknown');
+      expect(resolved).toBe(null);
     });
   });
 });

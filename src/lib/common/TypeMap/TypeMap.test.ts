@@ -2,23 +2,22 @@ import { TypeMap } from './TypeMap';
 
 describe('TypeMap', () => {
   const ctx: any = {
-    mapName: 'fakes',
-    name: 'label'
+    name: 'label',
+    functions: {
+      resolveResult: () => 1
+    }
   };
   const config = {
-    resolvers: {
-      maps: {
-        fakes: {
-          resolveResult: () => 1
-        }
-      }
-    },
     maps: {
       fakes: {
-        x: 1
+        data: {
+          x: 1
+        }
       },
       examples: {
-        x: 2
+        data: {
+          x: 2
+        }
       }
     }
   };

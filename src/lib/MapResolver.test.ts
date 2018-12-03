@@ -23,13 +23,11 @@ describe('MapResolver', () => {
   const config = {
     maps: {
       fakes: {
-        fieldMap,
-        typeMap
-      }
-    },
-    resolvers: {
-      maps: {
-        fakes: {
+        data: {
+          fieldMap,
+          typeMap
+        },
+        resolvers: {
           resolveResult: () => 1,
           isValidResult: () => true
         }

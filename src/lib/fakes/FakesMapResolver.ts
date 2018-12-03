@@ -23,7 +23,6 @@ export class FakesMapResolver extends MapResolver {
     });
     this.functions = {
       ...this.functions,
-      // TODO: make configurable?
       resolveResult,
       isValidResult
     };

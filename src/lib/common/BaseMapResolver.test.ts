@@ -4,46 +4,37 @@ import { BaseMapResolver } from './BaseMapResolver';
 // Allow `matches` list for both, using `resolveMatches`
 describe('BaseMapResolver', () => {
   const ctx: any = {};
-  const resMaps = {
-    fakes: {
-      resolveResult: () => 1
-    }
+  const resolvers = {
+    resolveResult: () => 1
+  };
+  const factories = {
+    createKeyMatcher: () => 1
   };
   const maps = {
     fakes: {
-      x: 1
+      data: {
+        x: 1
+      },
+      resolvers,
+      factories
     },
     examples: {
-      x: 2
+      data: {
+        x: 2
+      }
     }
   };
 
   const config = {
-    resolvers: {
-      maps: resMaps
-    },
-    factories: {
-      maps: {
-        fakes: {
-          createKeyMatcher: () => 1
-        }
-      }
-    },
     maps
   };
   const resolver = new BaseMapResolver(ctx, config);
 
-  describe('resolversMap', () => {
-    const { resolversMap } = resolver;
-    test('is defined', () => {
-      expect(resolversMap).toBe(resMaps);
-    });
-  });
-
   describe('mapsFor', () => {
     const fakes = resolver.mapsFor('fakes');
-    test('fakes', () => {
-      expect(fakes.x).toBe(1);
+    const { data } = fakes;
+    test('fakes data', () => {
+      expect(data.x).toBe(1);
     });
   });
 

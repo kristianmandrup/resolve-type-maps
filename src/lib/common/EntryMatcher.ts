@@ -4,20 +4,15 @@ import { ItemMatcher } from './ItemMatcher';
 export class EntryMatcher extends BaseMapResolver {
   resolveResult: (obj: any) => any;
   name: string;
-  mapName: string;
 
   constructor(ctx: any, config: any = {}) {
     super(ctx, config);
-    const { name, mapName } = ctx;
+    const { name } = ctx;
     if (!name) {
       this.error('missing name', ctx);
     }
-    if (!mapName) {
-      this.error('missing mapName', ctx);
-    }
-    this.mapName = mapName;
     this.name = name;
-    const { resolveResult } = this.resolvers;
+    const { resolveResult } = this.functions;
 
     if (!resolveResult) {
       this.error('missing resolveResult in resolvers map of config', {
@@ -28,10 +23,6 @@ export class EntryMatcher extends BaseMapResolver {
     }
 
     this.resolveResult = resolveResult;
-  }
-
-  get resolvers() {
-    return this.resolversMap[this.mapName] || {};
   }
 
   resolveMatches(obj, { key }) {

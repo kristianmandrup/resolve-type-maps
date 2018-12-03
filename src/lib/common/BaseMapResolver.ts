@@ -12,26 +12,20 @@ export class BaseMapResolver extends Base {
     this.functions = functions;
   }
 
-  get resolversMap() {
-    const resolvers = this.config.resolvers || {};
-    return resolvers.maps || {};
-  }
-
-  get factoriesMap() {
-    const factories = this.config.factories || {};
-    return factories.maps || {};
-  }
-
   mapsFor(name, defaultMap = {}) {
-    const maps = this.config.maps || {};
-    return maps[name] || defaultMap || {};
+    const maps = this.config.maps || defaultMap || {};
+    return maps[name] || {};
+  }
+
+  mapsDataFor(name, defaultMap = {}) {
+    return this.mapsFor(name, defaultMap).data || {};
   }
 
   resolversFor(name) {
-    return this.resolversMap[name] || {};
+    return this.mapsFor(name).resolvers || {};
   }
 
   factoriesFor(name) {
-    return this.factoriesMap[name] || {};
+    return this.mapsFor(name).factories || {};
   }
 }

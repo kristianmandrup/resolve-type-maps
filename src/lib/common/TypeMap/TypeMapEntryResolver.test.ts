@@ -13,7 +13,15 @@ describe('TypeMap', () => {
     }
   };
 
-  const ctx = { mapName: 'fakes', typeMap, typeName: 'Person', name: 'label' };
+  const ctx = {
+    mapName: 'fakes',
+    typeMap,
+    typeName: 'Person',
+    name: 'label',
+    functions: {
+      resolveResult: () => 1
+    }
+  };
   const resolver = new TypeMapEntryResolver(ctx);
 
   describe('instance', () => {

@@ -11,7 +11,6 @@ describe('resolveExample', () => {
   };
   const type = 'Person';
   const example = resolveExamples({ field, name, type });
-
   describe('example', () => {
     test('is defined', () => {
       expect(example).toBeDefined();

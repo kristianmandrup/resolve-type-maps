@@ -19,7 +19,7 @@ export class TypeMapEntryResolver extends EntryMatcher {
   }
 
   resolve(entryName) {
-    const matches = this.resolveMatches(this.typeName, {
+    const matches = this.resolveMatches(this.typeMap, {
       key: entryName
     });
     const typeDef = this.typeMap[entryName];
