@@ -4,7 +4,7 @@ import { createKeyMatcher, KeyMatcher } from './KeyMatcher';
 // Allow `matches` list for both, using `resolveMatches`
 
 const isValidResult = (_: any) => true;
-const resolveResult = obj => obj;
+const resolveResult = obj => obj.data || obj;
 
 const functions = {
   invalid: {},
@@ -19,7 +19,7 @@ describe('FieldMap', () => {
     valid: {
       mapName: 'fakes',
       name: 'label',
-      functions
+      functions: functions.valid
     },
     invalid: {}
   };
@@ -70,7 +70,10 @@ describe('createKeyMatcher', () => {
   const fieldType = 'string';
   const fieldMap = {
     name: {
-      matches: ['label', 'caption']
+      matches: ['label', 'caption'],
+      data: {
+        value: 32
+      }
     }
   };
 
@@ -106,16 +109,71 @@ describe('createKeyMatcher', () => {
   });
 
   describe('resolveMatches', () => {
+    const obj = {
+      string: {
+        value: 32
+      }
+    };
+
+    test('invalid key', () => {
+      expect(() => keyMatcher.resolveMatches(obj, null)).toThrow();
+    });
+
+    describe('obj is string', () => {
+      const obj = 'lastName';
+      const key = 'name';
+      const matches = keyMatcher.resolveMatches(obj, key);
+      test('list with obj string entry', () => {
+        expect(matches).toEqual([obj]);
+      });
+    });
+
+    describe('obj has matches entry', () => {
+      const key = 'name';
+      const matches = ['label'];
+      const obj = {
+        matches,
+        string: {
+          value: 32
+        }
+      };
+
+      const list = keyMatcher.resolveMatches(obj, key);
+      test('obj matches entry', () => {
+        expect(list).toEqual(matches);
+      });
+    });
+
+    describe('obj has match entry with string', () => {
+      const key = 'name';
+      const match = 'label';
+      const obj = {
+        match,
+        string: {
+          value: 32
+        }
+      };
+
+      const list = keyMatcher.resolveMatches(obj, key);
+      test('obj matches entry', () => {
+        expect(list).toEqual([match]);
+      });
+    });
+  });
+
+  describe('validateMatches', () => {
     const key = 'name';
     const obj = {
       string: {
         value: 32
       }
     };
-    const matches = keyMatcher.resolveMatches(obj, { key });
+    const matches = ['name', 'label'];
+
+    const validated = keyMatcher.validateMatches(matches, key, obj);
     // console.log({ matches });
-    test('matches', () => {
-      expect(matches).toEqual([]);
+    test('validated', () => {
+      expect(validated).toBeTruthy();
     });
   });
 
@@ -169,15 +227,20 @@ describe('createKeyMatcher', () => {
     });
   });
 
-  describe.only('resolve', () => {
+  describe('resolve', () => {
     test('resolves existing key to value', () => {
-      const resolved = keyMatcher.resolve('label');
-      // console.log({ resolved });
-      expect(resolved).toEqual('name');
+      const name = 'label';
+      keyMatcher.name = name;
+      keyMatcher.ctx.name = name;
+      const resolved = keyMatcher.resolve('name');
+      expect(resolved).toEqual({ value: 32 });
     });
 
     test('resolves unknown key to unknown (default if not match)', () => {
-      const resolved = keyMatcher.resolve('unknown');
+      const name = 'unknown';
+      keyMatcher.name = name;
+      keyMatcher.ctx.name = name;
+      const resolved = keyMatcher.resolve('name');
       expect(resolved).toBe(null);
     });
   });

@@ -64,27 +64,28 @@ export class KeyMatcher extends EntryMatcher {
     );
   }
 
+  // key being iterated on fieldMap
   resolve = key => {
-    const { isValidResult, fieldMap } = this;
-    let matches;
-    let obj = fieldMap[key];
-    obj = this.resolveObj(obj);
-    if (!isValidResult(obj)) {
+    const { isValidResult, fieldMap, name } = this;
+    const fieldObj = fieldMap[key];
+    if (!fieldObj) {
+      this.error('resolve: invalid fieldMap key', {
+        key,
+        fieldMap
+      });
+    }
+    const resolvedObj = this.resolveObj(fieldObj);
+    if (!isValidResult(resolvedObj)) {
       return false;
     }
 
-    matches = matches || this.resolveMatches(obj, { key });
-    this.validateMatches(matches, key, obj);
+    const matches = this.resolveMatches(resolvedObj, name);
 
-    return this.matchResult(obj, matches);
+    this.validateMatches(matches, key, resolvedObj);
+
+    const matched = this.matchResult(resolvedObj, matches);
+    return matched;
   };
-
-  resolveMatches(obj, { key }) {
-    if (typeof obj === 'string') {
-      return [obj];
-    }
-    return obj.match || obj.matches || [key];
-  }
 
   validateMatches(matches, key, obj) {
     return Array.isArray(matches)

@@ -17,7 +17,7 @@ export class EntryMatcher extends BaseMapResolver {
     if (!resolveResult) {
       this.error('missing resolveResult in resolvers map of config', {
         name: this.name,
-        resolvers: this.resolvers,
+        functions: this.functions,
         config
       });
     }
@@ -25,7 +25,19 @@ export class EntryMatcher extends BaseMapResolver {
     this.resolveResult = resolveResult;
   }
 
-  resolveMatches(obj, { key }) {
+  resolveMatches(obj, key: string) {
+    if (typeof key !== 'string') {
+      this.error('resolveMatches: missing or invalid key', {
+        obj,
+        key
+      });
+    }
+    if (!obj) {
+      this.error('resolveMatches: invalid entry object', {
+        obj,
+        key
+      });
+    }
     if (typeof obj === 'string') {
       return [obj];
     }
@@ -52,9 +64,11 @@ export class EntryMatcher extends BaseMapResolver {
     if (typeof matches.find !== 'function') {
       this.error('matches missing find function', { matches });
     }
-    return matches.find(matchItem => {
-      return this.createItemMatcher(matchItem).match();
+    const matched = matches.find(matchItem => {
+      const matcher = this.createItemMatcher(matchItem);
+      return matcher.match();
     });
+    return Boolean(matched);
   }
 
   createItemMatcher(matchItem) {

@@ -21,9 +21,11 @@ describe('EntryMatcher', () => {
 
   const config = {
     maps: {
-      data: {
-        fakes,
-        examples
+      fakes: {
+        data: fakes
+      },
+      examples: {
+        data: examples
       }
     }
   };
@@ -54,15 +56,15 @@ describe('EntryMatcher', () => {
 
       describe('matching key', () => {
         const key = 'x';
-        const resolved = entryMatcher.resolveMatches(obj, { key });
+        const resolved = entryMatcher.resolveMatches(obj, key);
         test('resolved', () => {
-          expect(resolved).toBeDefined();
+          expect(resolved).toEqual([key]);
         });
       });
 
       describe('not matching key', () => {
         const key = 'unknown';
-        const notResolved = entryMatcher.resolveMatches(obj, { key });
+        const notResolved = entryMatcher.resolveMatches(obj, key);
         test('resolved', () => {
           expect(notResolved).toEqual(['unknown']);
         });
@@ -77,7 +79,7 @@ describe('EntryMatcher', () => {
       };
       const result = entryMatcher.matchResult(obj, matches);
       test('result matched', () => {
-        expect(result).toBeDefined();
+        expect(result).toEqual(obj);
       });
     });
 
@@ -86,7 +88,16 @@ describe('EntryMatcher', () => {
       const matched = entryMatcher.findMatch(matches);
 
       test('item matched', () => {
-        expect(matched).toBeDefined();
+        expect(matched).toEqual('label');
+      });
+    });
+
+    describe('createItemMatcher', () => {
+      const itemMatcher = entryMatcher.createItemMatcher('label');
+      const matched = itemMatcher.match();
+
+      test('item matched', () => {
+        expect(matched).toBeTruthy();
       });
     });
   });

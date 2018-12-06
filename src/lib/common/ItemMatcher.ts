@@ -19,12 +19,11 @@ export class ItemMatcher extends BaseMapResolver {
   }
 
   resolveMatchItem() {
-    return typeof this.matchItem === 'function'
-      ? this.resolveMatchFn()
-      : this.resolveStringOrRegExp();
+    return this.resolveMatchFn() || this.resolveStringOrRegExp();
   }
 
   resolveMatchFn() {
+    if (typeof this.matchItem !== 'function') return;
     return this.matchItem(this.name, this);
   }
 
@@ -33,16 +32,15 @@ export class ItemMatcher extends BaseMapResolver {
     return regExp ? regExp.test(this.name) : false;
   }
 
-  prepareRegExp(matchExpr): RegExp {
-    let { regExpOpts } = this.ctx;
-    regExpOpts = regExpOpts || 'i';
+  prepareRegExp(matchExpr: string | RegExp): RegExp {
     if (!matchExpr) {
-      this.warn('Invalid match expression', {
+      this.error('Invalid match expression', {
         matchExpr,
         ctx: this.ctx
       });
     }
-
+    let { regExpOpts } = this.ctx;
+    regExpOpts = regExpOpts || 'i';
     return matchExpr instanceof RegExp
       ? matchExpr
       : new RegExp(matchExpr, regExpOpts);

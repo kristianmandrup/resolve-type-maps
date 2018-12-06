@@ -4,19 +4,28 @@ describe('TypeMap', () => {
   const ctx: any = {
     name: 'label',
     functions: {
-      resolveResult: () => 1
+      resolveResult: value => value
     }
   };
   const config = {
     maps: {
       fakes: {
         data: {
-          x: 1
+          typeMap: {
+            Person: {
+              name: 'firstName'
+            }
+          },
+          fieldMap: {
+            name: 'lastName'
+          }
         }
       },
       examples: {
         data: {
-          x: 2
+          fieldMap: {
+            name: ['John', 'Sally']
+          }
         }
       }
     }
@@ -29,12 +38,27 @@ describe('TypeMap', () => {
       expect(typeMap).toBeDefined();
     });
 
+    describe('resolveInMap', () => {
+      const typeNamesInMap = ['Person'];
+      const resolver = {
+        resolve: _ => ({
+          value: 'ok'
+        })
+      };
+      const result = typeMap.resolveInMap(typeNamesInMap, resolver);
+
+      test('value is ok', () => {
+        expect(result).toEqual({ value: 'ok' });
+      });
+    });
+
     describe('resolve', () => {
-      const maps: any = config.maps.fakes;
+      const maps: any = config.maps.fakes.data;
       const resolved = typeMap.resolve(maps.typeMap, 'Person');
+      // console.log({ resolved });
 
       test('resolved', () => {
-        expect(resolved).toBeDefined();
+        expect(resolved).toEqual({ name: 'firstName' });
       });
     });
   });

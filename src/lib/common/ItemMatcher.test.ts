@@ -9,8 +9,7 @@ describe('ItemMatcher', () => {
     });
 
     test('empty string', () => {
-      const regExp = itemMatcher.prepareRegExp('');
-      expect(regExp.test('hello')).toBeTruthy();
+      expect(() => itemMatcher.prepareRegExp('')).toThrow();
     });
 
     test('string with special RegExp symbols', () => {
@@ -32,12 +31,14 @@ describe('ItemMatcher', () => {
   });
 
   describe('resolveMatchFn', () => {
+    itemMatcher.matchItem = () => true;
     const matched = itemMatcher.resolveMatchFn();
     test('matches', () => {
       expect(matched).toBeTruthy();
     });
   });
   describe('resolveStringOrRegExp', () => {
+    itemMatcher.matchItem = 'Person';
     const matched = itemMatcher.resolveStringOrRegExp();
     test('matches', () => {
       expect(matched).toBeTruthy();

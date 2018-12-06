@@ -7,12 +7,16 @@ export class TypeMap extends EntryMatcher {
   }
 
   findTypeMap(typeMap, typeName) {
-    return typeMap[typeName] || {};
+    return typeMap[typeName] || typeMap || {};
   }
 
-  createEntryResolver({ typeNameToMatch, matchingTypeMap }) {
+  createEntryResolver(typeName, typeMap) {
     return new TypeMapEntryResolver(
-      { typeNameToMatch, matchingTypeMap },
+      {
+        ...this.ctx,
+        typeName,
+        typeMap
+      },
       this.config
     );
   }
@@ -20,15 +24,16 @@ export class TypeMap extends EntryMatcher {
   resolve(typeMap, typeNameToMatch) {
     const matchingTypeMap = this.findTypeMap(typeMap, typeNameToMatch);
     const typeNamesInMap = Object.keys(matchingTypeMap);
+    const resolver = this.createEntryResolver(typeNameToMatch, matchingTypeMap);
+    return this.resolveInMap(typeNamesInMap, resolver, matchingTypeMap);
+  }
+
+  resolveInMap(typeNamesInMap, resolver, defaultResult = {}) {
     let result;
-    const resolver = this.createEntryResolver({
-      typeNameToMatch,
-      matchingTypeMap
-    });
     typeNamesInMap.find(typeNameInMap => {
       result = resolver.resolve(typeNameInMap);
       return result;
     });
-    return result || matchingTypeMap;
+    return result || defaultResult;
   }
 }
