@@ -54,10 +54,13 @@ export class Base {
     return obj === Object(obj) && Object.keys(obj).length > 0;
   }
 
-  validateFunction({ method, functionName, func, data, error }) {
+  validateFunction(args: any = {}) {
+    const { method, functionName, func, data, error } = args;
+    const $error = error || this.error;
+    const $functionName = functionName || func.name;
     if (typeof func !== 'function') {
-      error(`${method}: missing or invalid ${functionName} function`, {
-        [functionName]: func,
+      $error(`${method}: missing or invalid ${functionName} function`, {
+        [$functionName]: func,
         ...data
       });
     }

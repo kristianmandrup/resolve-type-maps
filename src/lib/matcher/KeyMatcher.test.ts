@@ -78,8 +78,8 @@ describe('createKeyMatcher', () => {
       expect(keyMatcher.functions).toBe(functions.valid);
     });
 
-    test('isValidResult', () => {
-      expect(keyMatcher.isValidResult).toBe(isValidResult);
+    test('isValidEntry', () => {
+      expect(keyMatcher.isValidEntry).toBe(isValidResult);
     });
   });
 

@@ -16,7 +16,7 @@ export class KeyMatcher extends EntryMatcher {
   name: string;
   functions: any;
   opts: any;
-  isValidResult: (result: any) => boolean;
+  isValidEntry: (result: any) => boolean;
 
   constructor(ctx: any = {}, config = {}) {
     super(ctx, config);
@@ -36,13 +36,13 @@ export class KeyMatcher extends EntryMatcher {
       });
     }
 
-    this.setResultValidator(isValidResult);
+    this.setResultValidator(functions);
     this.setMap(map);
     this.setName(name);
   }
 
-  setResultValidator(isValidResult) {
-    this.isValidResult = isValidResult;
+  setResultValidator({ isValidResult, isValidTypeEntry }) {
+    this.isValidEntry = this.opts.isType ? isValidTypeEntry : isValidResult;
   }
 
   setMap(map) {
@@ -54,8 +54,9 @@ export class KeyMatcher extends EntryMatcher {
   }
 
   // key being iterated on fieldMap
+  // todo: rename to match
   resolve = (key: string, _?: any) => {
-    const { isValidResult, map, name } = this;
+    const { isValidEntry, map, name } = this;
     const entryObj = map[key];
     if (!entryObj) {
       this.error('resolve: invalid map key', {
@@ -68,7 +69,7 @@ export class KeyMatcher extends EntryMatcher {
 
     this.validateMatches(matches, key, entryObj);
 
-    if (!isValidResult(entryObj)) {
+    if (!isValidEntry(entryObj)) {
       return false;
     }
 

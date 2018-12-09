@@ -81,6 +81,11 @@ export const isValidResult = value => {
   return Boolean(typeof testVal === 'string');
 };
 
+// check if object and has any keys
+export const isValidTypeEntry = obj =>
+  obj === Object(obj) && Object.keys(obj).length > 0;
+
+// todo: perhaps rename to resolveFieldMapEntry or resolveLeaf
 export const resolveResult = ({ value, key = value }: any = {}) => {
   const $default = { faker: key, options: {} };
   if (value.faker) {
@@ -88,19 +93,27 @@ export const resolveResult = ({ value, key = value }: any = {}) => {
   }
   return $default;
 };
+
+//  used to resolve a matching type map entry
+//  can be resolved recursively until a fieldMap is reached where resolveResult is used.
+//  rename to resolveNode to make more generic perhaps
+
+export const resolveTypeEntry = ({ value }: any = {}) => value;
 ```
+
+Using resolver functions with `createTypeMapResolver`
 
 ```js
 import {
   createTypeMapResolver,
-  TypeMapResolver,
-  createMapResolver,
-  MapResolver,
-  BaseMapResolver,
-  Base
+  // TypeMapResolver,
+  // createMapResolver,
+  // MapResolver,
+  // BaseMapResolver,
+  // Base
 } from 'resolve-type-maps';
 
-import { resolveResult, isValidResult } from './resolvers'
+import * as functions from './resolvers'
 
 // see maps examples below
 const fieldMap: {
@@ -149,18 +162,30 @@ export const resolveFakes = (ctx, config): FakerResult => {
 
 const config = {
   maps: {
+    // will use mapName to lookup map.fakes
     fakes: {
+      // will use .typeMap (by default). Will attempt to resolve first if present
       typeMap: {
         Person: {
+          // will use isValidTypeEntry to check if this is a valid entry
+          // if valid use resolveTypeEntry to resolve this object to use as fieldMap
           matches: ['User', 'Person'],
+          // might want to further nest the fieldMap with key, such as having matches and data (ie. meta level)
           name: {
+            // will use resolveResult to resolve values to be returned
+            // will use isValidResult to check if this is a valid entry
             matches: [/name$/],
             faker: 'fullName'
           }
         }
       },
+      // will use .fieldMap (by default). Will attempt to use to resolve if not resolved via typeMap
       fieldMap: {
         name: {
+          // will use isValidResult to check if this is a valid entry
+          // if valid use resolveResult to resolve object to return
+          // might want to further nest the data, such as having matches and data, ie. meta level,
+          // depending on complexity or to have a standard navigation/resolution mechanism
           matches: ['name'],
           faker: 'firstName'
         },

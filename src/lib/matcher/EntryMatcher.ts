@@ -4,28 +4,36 @@ import { ItemMatcher } from './ItemMatcher';
 // const lower = (str: string) => str.toLowerCase();
 const capitalize = (str: string) => str.replace(/^\w/, c => c.toUpperCase());
 
+// todo: rename to resolver
 export class EntryMatcher extends BaseMapResolver {
   resolveResult: (obj: any) => any;
   name: string;
+  opts: any;
 
   constructor(ctx: any, config: any = {}) {
     super(ctx, config);
     const { name } = ctx;
+    const opts = ctx.opts || {};
     if (!name) {
       this.error('missing name', ctx);
     }
+    this.opts = opts;
     this.name = name;
-    const { resolveResult } = this.functions;
 
-    if (!resolveResult) {
-      this.error('missing resolveResult in resolvers map of config', {
-        name: this.name,
-        functions: this.functions,
-        config
-      });
-    }
+    this.setFunctions();
+  }
 
-    this.resolveResult = resolveResult;
+  setFunctions() {
+    const { resolveResult, resolveTypeEntry } = this.functions;
+    this.validateFunction({
+      method: 'setFunctions',
+      func: resolveResult,
+      data: this.functions
+    });
+
+    this.resolveResult = this.opts.isType
+      ? resolveTypeEntry || resolveResult
+      : resolveResult;
   }
 
   resolveMatches(obj, name: string, opts = {}) {

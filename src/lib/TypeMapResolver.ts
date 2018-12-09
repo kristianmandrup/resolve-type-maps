@@ -27,9 +27,7 @@ export class TypeMapResolver extends BaseMapResolver {
     this.ctx = merge.recursive(this.ctx, context);
 
     const { config, ctx } = this;
-    const { type, field, name, mapName, map, maps } = ctx;
-    const error = config.error;
-    const log = config.log || console.log;
+    const { type, field, name, mapName, map, maps, opts } = ctx;
     const typeName = typeof type === 'string' ? type : type.name;
 
     if (!field) {
@@ -63,7 +61,7 @@ export class TypeMapResolver extends BaseMapResolver {
 
     this.mapName = mapName || config.mapName;
     const resolvers = this.resolversFor(mapName);
-    const factories = this.resolversFor(mapName);
+    const factories = this.factoriesFor(mapName);
 
     this.resolveFromMap = resolvers.resolveFromMap || resolveFromMap;
 
@@ -84,9 +82,7 @@ export class TypeMapResolver extends BaseMapResolver {
       typeName,
       fieldName,
       fieldType,
-      config,
-      error,
-      log
+      opts
     };
     return this;
   }
