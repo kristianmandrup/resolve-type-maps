@@ -1,4 +1,4 @@
-import { Base } from '../Base';
+import { Base } from './Base';
 
 export function resolveFromMap(ctx, config?) {
   const resolver = createMapResolver(ctx, config);
@@ -9,18 +9,26 @@ export function createMapResolver(ctx, config?) {
   return new MapResolver(ctx, config);
 }
 
+type CreateKeyMatcherFn = (
+  ctx: any,
+  config: any
+) => {
+  resolve: (key: string) => string | null;
+};
+
+type CreateKeyResolverFn = (
+  ctx: any,
+  config: any
+) => (key: string) => string | null;
+type ResolveKeyFn = (key: string) => any;
+
 export class MapResolver extends Base {
   map: any;
   name: string;
   ctx: any;
-  createKeyMatcher: (
-    ctx: any,
-    config: any
-  ) => {
-    resolve: (key: string) => string | null;
-  };
-  createKeyResolver: (ctx: any, config: any) => (key: string) => string | null;
-  resolveKey: (key: string) => any;
+  createKeyMatcher?: CreateKeyMatcherFn;
+  createKeyResolver?: CreateKeyResolverFn;
+  resolveKey: ResolveKeyFn;
 
   constructor(ctx: any, config = {}) {
     super(config);
@@ -66,10 +74,10 @@ export class MapResolver extends Base {
     const keys = Object.keys(map);
     // console.log('resolve', { keys, name: this.name, map });
     let result;
-    const key = keys.find(key => {
+    for (const key of keys) {
       result = this.resolveKey(key);
-      return Boolean(result);
-    });
-    return key ? result : null;
+      if (result) break;
+    }
+    return result;
   }
 }

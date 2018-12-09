@@ -12,7 +12,7 @@ export class Base {
     if (config.log) {
       this.log = config.log;
     }
-    this.className = this.constructor.name;
+    this.className = this.constructor['name'];
   }
 
   get label() {

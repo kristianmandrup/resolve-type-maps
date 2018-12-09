@@ -1,5 +1,5 @@
 import * as maps from '../maps';
-import { TypeMapResolver } from '../TypeMapResolver';
+import { TypeMapResolver } from '../../src/lib/TypeMapResolver';
 
 export const isValidResult = value => {
   if (!value) return false;
@@ -17,7 +17,8 @@ export const resolveResult = ({ value, key = value }: any = {}) => {
 
 export class FakesMapResolver extends TypeMapResolver {
   constructor(ctx = {}, config = {}) {
-    super('fakes', ctx, {
+    super(ctx, {
+      mapName: 'fakes',
       maps,
       ...config
     });

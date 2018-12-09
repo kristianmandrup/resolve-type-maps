@@ -1,5 +1,5 @@
 import { MapResolver, resolveFromMap } from './MapResolver';
-import { createKeyResolver } from '../common/KeyMatcher';
+import { createKeyResolver } from './matcher/KeyMatcher';
 
 const values = ['john', 'jack'];
 const nameEntry = {

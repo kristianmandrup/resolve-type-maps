@@ -1,4 +1,4 @@
-import { Base } from '../Base';
+import { Base } from './Base';
 
 export class BaseMapResolver extends Base {
   ctx: any;

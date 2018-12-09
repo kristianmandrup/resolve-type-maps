@@ -1,5 +1,5 @@
 import { EntryMatcher } from './EntryMatcher';
-import { fakes, examples } from '../maps';
+import { fakes, examples } from '../../../demo/maps';
 
 const resolveResult = obj => obj;
 

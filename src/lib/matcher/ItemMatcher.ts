@@ -1,4 +1,4 @@
-import { BaseMapResolver } from './BaseMapResolver';
+import { BaseMapResolver } from '../BaseMapResolver';
 
 export class ItemMatcher extends BaseMapResolver {
   matchItem: any;

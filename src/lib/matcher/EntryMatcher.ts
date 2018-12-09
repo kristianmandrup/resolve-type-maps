@@ -1,4 +1,4 @@
-import { BaseMapResolver } from './BaseMapResolver';
+import { BaseMapResolver } from '../BaseMapResolver';
 import { ItemMatcher } from './ItemMatcher';
 
 // const lower = (str: string) => str.toLowerCase();

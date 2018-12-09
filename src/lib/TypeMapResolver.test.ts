@@ -2,7 +2,7 @@ import { TypeMapResolver } from './TypeMapResolver';
 
 // re-align `typeFieldMap` and `fieldMap` (resolve examples and fakes), using a generic `resultResolver`.
 // Allow `matches` list for both, using `resolveMatches`
-describe('MapResolver', () => {
+describe('TypeMapResolver', () => {
   const type = 'Person';
   const name = 'name';
   const field = {
@@ -43,8 +43,7 @@ describe('MapResolver', () => {
   };
 
   const resolver = new TypeMapResolver(
-    'fakes',
-    { type, field, functions, name },
+    { mapName: 'fakes', type, field, functions, name },
     config
   );
   // console.log({ resolver });
@@ -92,7 +91,7 @@ describe('MapResolver', () => {
       const { mapResolved } = resolver;
 
       test('resolved: is null', () => {
-        expect(resolved).toBe(null);
+        expect(resolved).toBeFalsy();
       });
 
       test('mapResolved has fieldMap', () => {

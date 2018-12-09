@@ -1,6 +1,10 @@
-import { BaseMapResolver } from './common/BaseMapResolver';
-import { resolveFromMap } from './common/MapResolver';
-import { createKeyMatcher, createKeyResolver } from './common/KeyMatcher';
+import { BaseMapResolver } from './BaseMapResolver';
+import { resolveFromMap } from './MapResolver';
+import { createKeyMatcher, createKeyResolver } from './matcher/KeyMatcher';
+
+export const createTypeMapResolver = (ctx, config) => {
+  return new TypeMapResolver(ctx, config);
+};
 
 export class TypeMapResolver extends BaseMapResolver {
   fieldMap: any;
@@ -14,9 +18,9 @@ export class TypeMapResolver extends BaseMapResolver {
     fieldMap?: boolean;
   };
 
-  constructor(mapName, ctx: any = {}, config: any = {}) {
+  constructor(ctx: any = {}, config: any = {}) {
     super(ctx, config);
-    const { type, field, name } = ctx;
+    const { type, field, name, mapName, map } = ctx;
     const error = config.error;
     const log = config.log || console.log;
     const typeName = typeof type === 'string' ? type : type.name;
@@ -29,7 +33,7 @@ export class TypeMapResolver extends BaseMapResolver {
     const fieldName = field.name;
     const fieldType = field.type;
 
-    this.init(mapName, { maps: config.maps });
+    this.init(mapName, { maps: config.maps, map });
     this.mapName = mapName;
     const resolvers = this.resolversFor(mapName);
     const factories = this.resolversFor(mapName);
@@ -61,8 +65,8 @@ export class TypeMapResolver extends BaseMapResolver {
     };
   }
 
-  init(name, { maps }) {
-    const confMap = this.mapsDataFor(name, maps);
+  init(name, { maps, map }) {
+    const confMap = map || this.mapsDataFor(name, maps);
 
     this.functions = {
       ...this.functions
