@@ -28,23 +28,32 @@ export class EntryMatcher extends BaseMapResolver {
     this.resolveResult = resolveResult;
   }
 
-  resolveMatches(obj, key: string, opts = {}) {
-    if (typeof key !== 'string') {
-      this.error('resolveMatches: missing or invalid key', {
+  resolveMatches(obj, name: string, opts = {}) {
+    if (typeof name !== 'string') {
+      this.error('resolveMatches: missing or invalid name', {
         obj,
-        key
+        name
       });
     }
     if (!obj) {
       this.error('resolveMatches: invalid entry object', {
         obj,
-        key
+        name
       });
     }
     if (typeof obj === 'string') {
       return this.defaultMatches(obj, opts);
     }
-    const matches = obj.match || obj.matches || key;
+    const matches = obj.match || obj.matches || this.keyToMatchName(name);
+    return this.createMatches(matches);
+  }
+
+  // Note: can be used to transform f.ex persons into Person for matching on type
+  keyToMatchName(name) {
+    return name;
+  }
+
+  createMatches(matches) {
     return Array.isArray(matches) ? matches : [matches];
   }
 

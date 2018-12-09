@@ -4,10 +4,9 @@ export function createKeyMatcher(ctx: any, config: any = {}) {
   return new KeyMatcher(ctx, config);
 }
 
-export function createKeyResolver(
-  ctx: any,
-  config: any = {}
-): (key: string) => string {
+type KeyResolverFn = (key: string, value?: any) => string;
+
+export function createKeyResolver(ctx: any, config: any = {}): KeyResolverFn {
   return createKeyMatcher(ctx, config).resolve;
 }
 
@@ -37,14 +36,25 @@ export class KeyMatcher extends EntryMatcher {
       });
     }
 
-    this.isValidResult = isValidResult;
+    this.setResultValidator(isValidResult);
+    this.setMap(map);
+    this.setName(name);
+  }
 
+  setResultValidator(isValidResult) {
+    this.isValidResult = isValidResult;
+  }
+
+  setMap(map) {
     this.map = map;
+  }
+
+  setName(name) {
     this.name = name;
   }
 
   // key being iterated on fieldMap
-  resolve = key => {
+  resolve = (key: string, _?: any) => {
     const { isValidResult, map, name } = this;
     const entryObj = map[key];
     if (!entryObj) {

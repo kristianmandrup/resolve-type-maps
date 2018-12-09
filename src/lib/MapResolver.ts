@@ -13,14 +13,14 @@ type CreateKeyMatcherFn = (
   ctx: any,
   config: any
 ) => {
-  resolve: (key: string) => string | null;
+  resolve: (key: string, value?: any) => string | null;
 };
 
 type CreateKeyResolverFn = (
   ctx: any,
   config: any
 ) => (key: string) => string | null;
-type ResolveKeyFn = (key: string) => any;
+type ResolveKeyFn = (key: string, value?: any) => any;
 
 export class MapResolver extends Base {
   map: any;
@@ -75,7 +75,7 @@ export class MapResolver extends Base {
     // console.log('resolve', { keys, name: this.name, map });
     let result;
     for (const key of keys) {
-      result = this.resolveKey(key);
+      result = this.resolveKey(key, map[key]);
       if (result) break;
     }
     return result;

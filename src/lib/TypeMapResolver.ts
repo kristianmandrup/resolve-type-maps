@@ -49,8 +49,8 @@ export class TypeMapResolver extends BaseMapResolver {
       });
     }
 
-    const typeMap = confMap.typeMap || {};
-    const fieldMap = confMap.fieldMap || {};
+    const typeMap = this.getTypeMap(confMap);
+    const fieldMap = this.getFieldMap(confMap);
 
     if (!(typeMap || fieldMap)) {
       this.error('missing typeMap or fieldMap in map to resolve from', {
@@ -91,6 +91,14 @@ export class TypeMapResolver extends BaseMapResolver {
     return this;
   }
 
+  getTypeMap(map) {
+    return map.typeMap || {};
+  }
+
+  getFieldMap(map) {
+    return map.fieldMap || {};
+  }
+
   resolve() {
     let result;
     this.mapResolved = {};
@@ -104,7 +112,8 @@ export class TypeMapResolver extends BaseMapResolver {
   }
 
   resolveTypeMap() {
-    const result = this.resolveMap(this.typeFieldMap, { isType: true });
+    const result =
+      this.typeFieldMap && this.resolveMap(this.typeFieldMap, { isType: true });
     if (result) {
       this.mapResolved.typeMap = true;
     }
@@ -112,7 +121,7 @@ export class TypeMapResolver extends BaseMapResolver {
   }
 
   resolveFieldMap(map = this.fieldMap) {
-    const result = this.resolveMap(map);
+    const result = map && this.resolveMap(map);
     if (result) {
       this.mapResolved.fieldMap = true;
     }
