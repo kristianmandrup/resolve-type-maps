@@ -2,20 +2,78 @@
 
 Resolve type maps for use when building and resolving type models.
 
-## Usage
+## When to use
+
+Resolving type/field to a value is extremely useful in many model driven development scenarios.
+This can be used to assign default configurations for:
+
+- Entity model types
+- model validations
+- form fields
+- form field validations
+- faking/mocking entities and fields
+- ...
+
+You could even generate models and schemas directly from data, such as JSON data.
 
 ```js
-import {
-  createTypeMapResolver,
-  TypeMapResolver,
-  createMapResolver,
-  MapResolver,
-  BaseMapResolver,
-  Base
-} from 'resolve-type-maps';
+{
+  persons: [
+    {
+      id: 'person:1',
+      name: 'John',
+      age: 32,
+      status: 'single'
+    },
+    {
+      id: 'person:2',
+      name: 'Anna',
+      age: 26,
+      status: 'married'
+    }
+  ];
+}
+```
 
-// see maps examples below
-import * as maps from '../maps';
+By resolving this data against some pre-defined type maps...
+We could resolve the data to a type schema:
+
+```js
+const types = {
+  Person: {
+    fields: {
+      id: {
+        type: 'ID',
+        generated: true,
+        primary: true
+      },
+      name: {
+        type: 'string',
+        constraint: { alpha: true }
+      },
+      age: {
+        type: 'int',
+        constraint: { range: { min: 0, max: 100 } }
+      },
+      status: {
+        type: 'enum',
+        values: ['single', 'married']
+      }
+    }
+  }
+};
+```
+
+We can then reuse these maps across project or share with others, building up a repository of pre-defined mappings ready to be used on domain specific projects.
+
+These mappings could serve as useful defaults, to be overridden as needed on a case by case basis, but serving as a quick way to set up the initial models and schemas for the project.
+
+## Usage
+
+Define resolvers to validate and resolve entry:
+
+```js
+// resolvers.js
 
 export const isValidResult = value => {
   if (!value) return false;
@@ -30,202 +88,111 @@ export const resolveResult = ({ value, key = value }: any = {}) => {
   }
   return $default;
 };
+```
+
+```js
+import {
+  createTypeMapResolver,
+  TypeMapResolver,
+  createMapResolver,
+  MapResolver,
+  BaseMapResolver,
+  Base
+} from 'resolve-type-maps';
+
+import { resolveResult, isValidResult } from './resolvers'
+
+// see maps examples below
+const fieldMap: {
+  price: {
+    matches: ['money', 'price', 'amount', 'value'],
+    faker: "money",
+    options: {
+      minMoney: 10,
+      maxMoney: 1000,
+      decimalPlaces: 2
+    }
+  },
+  // ...
+}
+
+const resolver = createTypeMapResolver(
+  { map: fieldMap, functions, name: 'value' },
+  config
+);
+const { faker, options } = resolver.resolve()
+```
+
+## Advanced example
+
+```js
+import { TypeMapResolver } from 'resolve-type-maps';
+import * as maps from '../maps';
 
 export class FakesMapResolver extends TypeMapResolver {
   constructor(ctx = {}, config = {}) {
-    super(ctx, {
-      mapName: 'fakes',
-      maps,
-      ...config
+    super(ctx, config);
+    this.init({
+      mapName: 'fakes', // which map to use
+      maps, // contains maps for both fakes and examples
+      functions: {
+        resolveResult,
+        isValidResult
+      }
     });
-    this.functions = {
-      ...this.functions,
-      resolveResult,
-      isValidResult
-    };
   }
 }
 
-export const resolveFakes = ({
-  type,
-  name,
-  field,
-  fields = [],
-  config = {}
-}: any): FakerResult => {
-  return new FakesMapResolver({ type, name, field, fields, config }).resolve();
+export const resolveFakes = (ctx, config): FakerResult => {
+  return new FakesMapResolver(ctx, config).resolve();
 };
 
 const config = {
   maps: {
     fakes: {
+      typeMap: {
+        Person: {
+          matches: ['User', 'Person'],
+          name: {
+            matches: [/name$/],
+            faker: 'fullName'
+          }
+        }
+      },
       fieldMap: {
-        word: ['firstName']
+        name: {
+          matches: ['name'],
+          faker: 'firstName'
+        },
+        caption: {
+          matches: ['title', 'label', 'captio'],
+          faker: 'word'
+        },
+        description: 'lorem'
       }
     }
   }
 };
-// should resolve to {faker: 'word', options: {}}
-const fields = ['firstName', 'lastName'];
 
-const fake = resolveFakes({ type, field, fields, config });
+const field = {
+  type: 'String',
+  name: 'name'
+};
+
+const nameFaker = resolveFakes({ type: 'Person', field }, config);
+// => fullName
+
+const titleFaker = resolveFakes({ type: 'Person', name: 'title' }, config);
+// => word
+
+const descFaker = resolveFakes({ type: 'Person', name: 'description' }, config);
+// => lorem
 ```
 
-## Example type and field maps
+## Examples
 
-### Schema configuration
+See [Faker maps](./FakerMaps.md) for more map examples.
 
-Generate JSON schema, GraphQL typedefs, Model schemas etc.
+## License
 
-```js
-const typeMap = {
-  Person: {
-    match: ['Vehicle', 'Auto'],
-    fields: {
-      name: {
-        type: 'string'
-      },
-      age: {
-        type: 'int',
-        range: { min: 0, max: 130 }
-      },
-      gender: {
-        type: 'string',
-        enum: ['male', 'female']
-      }
-    }
-  }
-};
-```
-
-### Sample values configuration
-
-```js
-const typeMap = {
-  Car: {
-    match: ['Vehicle', 'Auto'],
-    fields: {
-      brand: [
-        'Ford',
-        'Porsche',
-        'Audi',
-        'Volvo',
-        'Toyota',
-        'Fiat',
-        'BMW',
-        'Mercedes-Benz'
-      ]
-    }
-  },
-  Laptop: {
-    brand: ['Lenovo', 'Dell', 'HP', 'Acer', 'Asus', 'Apple', 'Razer', 'Samsung']
-  }
-};
-
-const gender = ['male', 'female'];
-const ticker = ['AAPL', 'MSFT', 'GE', 'GOOG', 'CNET', 'JPM', 'NYT'];
-
-const fieldMap = {
-  gender: {
-    match: ['gender', 'sex'],
-    values: gender
-  },
-  ticker: {
-    match: ['ticker', 'symbol', 'stock'],
-    values: ticker
-  }
-};
-
-export const examples = {
-  typeMap,
-  fieldMap
-};
-```
-
-### Faker (fake value) configuration
-
-```js
-export const typeMap = {
-  Person: {
-    name: 'fullName'
-  },
-  User: {
-    name: 'userName'
-  },
-  Company: {
-    name: 'companyName'
-  },
-  Account: {
-    name: 'financeAccountName'
-  },
-  Phone: {
-    number: 'phoneNumber'
-  },
-  File: {
-    extension: 'fileExtension'
-  },
-  Product: {
-    name: 'productName',
-    category: 'productCategory',
-    price: {
-      type: 'money',
-      options: {
-        minMoney: 10,
-        maxMoney: 1000,
-        decimalPlaces: 2
-      }
-    },
-    discount: {
-      type: 'money',
-      options: {
-        minMoney: 1,
-        maxMoney: 800,
-        decimalPlaces: 2
-      }
-    }
-  },
-  Address: {
-    zip: 'zipCode',
-    code: 'zipCode'
-  }
-};
-
-export const fieldMap = {
-  email: ['mail', 'sender', 'receiver', 'cc', 'bcc'],
-  money: ['price', 'amount', 'value', 'discount'],
-  filename: ['file'],
-  semver: ['version'],
-  fileExtension: ['ext'],
-  mimeType: ['mime'],
-  lorem: ['text', 'desc', 'description', 'content'],
-  word: ['name'],
-  words: ['title', "'caption'", 'label'],
-  jobTitle: ['job'],
-  ipv4Address: ['ip'],
-  url: ['url', 'uri'],
-  imageUrl: ['image', 'img'],
-  phoneNumber: ['phone'],
-  financeAccountName: ['account'],
-  bankIdentifierCode: ['bic'],
-  internationalBankAccountNumber: ['iban'],
-  uuid: ['id'],
-  dbColumn: ['column', 'class'],
-  companyName: ['company'],
-  count: ['number'],
-  zipCode: ['zip', 'postal'],
-  colorName: ['color'],
-  longitude: ['lon'],
-  latitude: ['lat'],
-  productMaterial: ['material'],
-  companyCatchPhrase: ['slogan'],
-  firstName: ['first'],
-  lastName: ['last'],
-  alphaNumeric: ['secret', 'key'],
-  recentDate: ['created', 'updated', 'changed', 'deleted']
-};
-
-export const fakes = {
-  typeMap,
-  fieldMap
-};
-```
+MIT

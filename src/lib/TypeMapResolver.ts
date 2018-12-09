@@ -1,9 +1,10 @@
 import { BaseMapResolver } from './BaseMapResolver';
 import { resolveFromMap } from './MapResolver';
 import { createKeyMatcher, createKeyResolver } from './matcher/KeyMatcher';
+import merge from 'merge';
 
 export const createTypeMapResolver = (ctx, config) => {
-  return new TypeMapResolver(ctx, config);
+  return new TypeMapResolver(ctx, config).init();
 };
 
 export class TypeMapResolver extends BaseMapResolver {
@@ -20,7 +21,13 @@ export class TypeMapResolver extends BaseMapResolver {
 
   constructor(ctx: any = {}, config: any = {}) {
     super(ctx, config);
-    const { type, field, name, mapName, map } = ctx;
+  }
+
+  init(context = {}) {
+    this.ctx = merge.recursive(this.ctx, context);
+
+    const { config, ctx } = this;
+    const { type, field, name, mapName, map, maps } = ctx;
     const error = config.error;
     const log = config.log || console.log;
     const typeName = typeof type === 'string' ? type : type.name;
@@ -33,14 +40,32 @@ export class TypeMapResolver extends BaseMapResolver {
     const fieldName = field.name;
     const fieldType = field.type;
 
-    this.init(mapName, { maps: config.maps, map });
+    const confMap = map || this.mapsDataFor(mapName, maps);
+    if (!this.isFullObject(confMap)) {
+      this.error('missing map to resolve', {
+        mapName,
+        maps,
+        map
+      });
+    }
+
+    const typeMap = confMap.typeMap || {};
+    const fieldMap = confMap.fieldMap || {};
+
+    if (!(typeMap || fieldMap)) {
+      this.error('missing typeMap or fieldMap in map to resolve from', {
+        map: confMap
+      });
+    }
+
+    this.typeFieldMap = typeMap;
+    this.fieldMap = fieldMap;
+
     this.mapName = mapName || config.mapName;
     const resolvers = this.resolversFor(mapName);
     const factories = this.resolversFor(mapName);
 
     this.resolveFromMap = resolvers.resolveFromMap || resolveFromMap;
-
-    // console.log('' + resolvers.resolveResult);
 
     this.functions = {
       ...functions,
@@ -63,16 +88,7 @@ export class TypeMapResolver extends BaseMapResolver {
       error,
       log
     };
-  }
-
-  init(name, { maps, map }) {
-    const confMap = map || this.mapsDataFor(name, maps);
-
-    this.functions = {
-      ...this.functions
-    };
-    this.typeFieldMap = confMap.typeMap || {};
-    this.fieldMap = confMap.fieldMap || {};
+    return this;
   }
 
   resolve() {

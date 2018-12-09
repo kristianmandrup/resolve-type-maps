@@ -17,15 +17,14 @@ export const resolveResult = ({ value, key = value }: any = {}) => {
 
 export class FakesMapResolver extends TypeMapResolver {
   constructor(ctx = {}, config = {}) {
-    super(ctx, {
+    super(ctx, config);
+    this.init({
       mapName: 'fakes',
       maps,
-      ...config
+      functions: {
+        resolveResult,
+        isValidResult
+      }
     });
-    this.functions = {
-      ...this.functions,
-      resolveResult,
-      isValidResult
-    };
   }
 }

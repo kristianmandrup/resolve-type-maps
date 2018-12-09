@@ -1,4 +1,4 @@
-import { TypeMapResolver } from './TypeMapResolver';
+import { createTypeMapResolver } from './TypeMapResolver';
 
 // re-align `typeFieldMap` and `fieldMap` (resolve examples and fakes), using a generic `resultResolver`.
 // Allow `matches` list for both, using `resolveMatches`
@@ -42,12 +42,12 @@ describe('TypeMapResolver', () => {
     }
   };
 
-  const resolver = new TypeMapResolver(
+  const resolver = createTypeMapResolver(
     { mapName: 'fakes', type, field, functions, name },
     config
   );
   // console.log({ resolver });
-  describe('instance', () => {
+  describe.only('instance', () => {
     test('is defined', () => {
       expect(resolver).toBeDefined();
     });

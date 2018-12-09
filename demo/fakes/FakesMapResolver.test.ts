@@ -27,9 +27,9 @@ describe('resolveFake', () => {
       }
     };
     // should resolve to {faker: 'word', options: {}}
-    const fields = ['firstName', 'lastName'];
+    // const fields = ['firstName', 'lastName'];
 
-    const fake = resolveFakes({ type, field, fields, config });
+    const fake = resolveFakes({ type, field, config });
     // console.log('resolveFakes', { fake });
 
     describe('fake', () => {
