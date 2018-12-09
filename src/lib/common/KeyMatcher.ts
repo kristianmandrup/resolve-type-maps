@@ -11,26 +11,22 @@ export function createKeyResolver(
   return createKeyMatcher(ctx, config).resolve;
 }
 
-const lower = (str: string) => str.toLowerCase();
-
-const capitalize = (str: string) => str.replace(/^\w/, c => c.toUpperCase());
-
 export class KeyMatcher extends EntryMatcher {
   ctx: any;
-  fieldMap: any;
-  fieldType: string;
-  typeName: string;
+  map: any;
+  name: string;
   functions: any;
+  opts: any;
   isValidResult: (result: any) => boolean;
 
   constructor(ctx: any = {}, config = {}) {
     super(ctx, config);
-    const { fieldMap, fieldType, typeName, functions } = ctx;
+    const { name, functions, map, opts } = ctx;
     if (!functions) {
       this.error('missing functions entry on context');
     }
     this.functions = functions;
-    // TODO: extract directly from ctx
+    this.opts = opts || {};
     const { isValidResult } = functions;
     if (typeof isValidResult !== 'function') {
       this.error('isValidResult is not a function', {
@@ -43,47 +39,30 @@ export class KeyMatcher extends EntryMatcher {
 
     this.isValidResult = isValidResult;
 
-    this.fieldMap = fieldMap;
-    this.fieldType = fieldType;
-    this.typeName = typeName;
-  }
-
-  resolveObj(obj: any = {}) {
-    const { fieldType } = this;
-    // allow more fine grained mapping on type of field
-    const typeClass = capitalize(fieldType);
-    const typeName = lower(fieldType);
-
-    return (
-      obj[fieldType] ||
-      obj[typeName] ||
-      obj[typeClass] ||
-      obj.default ||
-      obj.any ||
-      obj
-    );
+    this.map = map;
+    this.name = name;
   }
 
   // key being iterated on fieldMap
   resolve = key => {
-    const { isValidResult, fieldMap, name } = this;
-    const fieldObj = fieldMap[key];
-    if (!fieldObj) {
-      this.error('resolve: invalid fieldMap key', {
+    const { isValidResult, map, name } = this;
+    const entryObj = map[key];
+    if (!entryObj) {
+      this.error('resolve: invalid map key', {
         key,
-        fieldMap
+        entryObj
       });
     }
-    const resolvedObj = this.resolveObj(fieldObj);
-    if (!isValidResult(resolvedObj)) {
+
+    const matches = this.resolveMatches(entryObj, name, this.opts);
+
+    this.validateMatches(matches, key, entryObj);
+
+    if (!isValidResult(entryObj)) {
       return false;
     }
 
-    const matches = this.resolveMatches(resolvedObj, name);
-
-    this.validateMatches(matches, key, resolvedObj);
-
-    const matched = this.matchResult(resolvedObj, matches);
+    const matched = this.matchResult(entryObj, matches);
     return matched;
   };
 

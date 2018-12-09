@@ -1,6 +1,9 @@
 import { BaseMapResolver } from './BaseMapResolver';
 import { ItemMatcher } from './ItemMatcher';
 
+// const lower = (str: string) => str.toLowerCase();
+const capitalize = (str: string) => str.replace(/^\w/, c => c.toUpperCase());
+
 export class EntryMatcher extends BaseMapResolver {
   resolveResult: (obj: any) => any;
   name: string;
@@ -25,7 +28,7 @@ export class EntryMatcher extends BaseMapResolver {
     this.resolveResult = resolveResult;
   }
 
-  resolveMatches(obj, key: string) {
+  resolveMatches(obj, key: string, opts = {}) {
     if (typeof key !== 'string') {
       this.error('resolveMatches: missing or invalid key', {
         obj,
@@ -39,10 +42,14 @@ export class EntryMatcher extends BaseMapResolver {
       });
     }
     if (typeof obj === 'string') {
-      return [obj];
+      return this.defaultMatches(obj, opts);
     }
     const matches = obj.match || obj.matches || key;
     return Array.isArray(matches) ? matches : [matches];
+  }
+
+  defaultMatches(str, opts: any = {}) {
+    return opts.isType ? [str, capitalize(str)] : [str];
   }
 
   matchResult(obj, matches) {
@@ -51,10 +58,12 @@ export class EntryMatcher extends BaseMapResolver {
     }
     // todo: make generic
     const isMatching = this.findMatch(matches || []);
-    return isMatching ? this.resolveResult(obj) : null;
+
+    const result = isMatching ? this.resolveResult(obj) : null;
+    return result;
   }
 
-  findMatch(matches) {
+  findMatch(matches): boolean {
     if (!Array.isArray(matches)) {
       this.error(
         'findMatch: Invalid matches. Must be an array or object with a find function',

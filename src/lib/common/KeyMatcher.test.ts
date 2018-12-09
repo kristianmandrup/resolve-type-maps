@@ -51,24 +51,7 @@ describe('FieldMap', () => {
 });
 
 describe('createKeyMatcher', () => {
-  // fieldMap,
-  // type,
-  // typeName,
-  // fieldName,
-  // fieldType,
-  // field,
-  // fields,
-  // error,
-  // config,
-  // functions
-
-  // const type = "Person";
-  // const field = {
-  //   type: "String",
-  //   name: "firstName"
-  // };
-  const fieldType = 'string';
-  const fieldMap = {
+  const map = {
     name: {
       matches: ['label', 'caption'],
       data: {
@@ -77,26 +60,18 @@ describe('createKeyMatcher', () => {
     }
   };
 
-  const typeName = 'Person';
-  const fieldName = 'name';
+  // const typeName = 'Person';
+  const name = 'name';
   const ctx: any = {
-    mapName: 'fakes',
-    fieldName,
-    name: fieldName,
-    fieldMap,
-    fieldType,
-    typeName,
+    map,
+    name,
     functions: functions.valid
   };
   const keyMatcher = createKeyMatcher(ctx);
 
   describe('keyMatcher instance', () => {
     test('fieldMap', () => {
-      expect(keyMatcher.fieldMap).toBe(fieldMap);
-    });
-
-    test('fieldType', () => {
-      expect(keyMatcher.fieldType).toBe(fieldType);
+      expect(keyMatcher.map).toBe(map);
     });
 
     test('functions', () => {
@@ -174,56 +149,6 @@ describe('createKeyMatcher', () => {
     // console.log({ matches });
     test('validated', () => {
       expect(validated).toBeTruthy();
-    });
-  });
-
-  describe('resolveObj', () => {
-    const value = 32;
-
-    describe('string', () => {
-      const obj = {
-        string: {
-          value
-        }
-      };
-      const valueObj = keyMatcher.resolveObj(obj);
-      test('resolves existing key to value', () => {
-        expect(valueObj.value).toBe(value);
-      });
-    });
-
-    describe('String', () => {
-      const obj = {
-        String: {
-          value
-        }
-      };
-      const valueObj = keyMatcher.resolveObj(obj);
-      test('resolves existing key to value', () => {
-        expect(valueObj.value).toBe(value);
-      });
-    });
-
-    describe('default', () => {
-      const obj = {
-        default: {
-          value
-        }
-      };
-      const valueObj = keyMatcher.resolveObj(obj);
-      test('resolves default key to value', () => {
-        expect(valueObj.value).toEqual(32);
-      });
-    });
-
-    describe('fallback to object', () => {
-      const obj = {
-        value
-      };
-      const valueObj = keyMatcher.resolveObj(obj);
-      test('resolves existing key to value', () => {
-        expect(valueObj.value).toBe(value);
-      });
     });
   });
 

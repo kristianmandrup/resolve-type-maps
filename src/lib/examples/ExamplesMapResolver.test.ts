@@ -9,8 +9,11 @@ describe('resolveExample', () => {
     name,
     type: 'String'
   };
+  const functions = {
+    resolveResult: obj => obj
+  };
   const type = 'Person';
-  const example = resolveExamples({ field, name, type });
+  const example = resolveExamples({ field, name, type, functions });
   describe('example', () => {
     test('is defined', () => {
       expect(example).toBeDefined();

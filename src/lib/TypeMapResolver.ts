@@ -1,14 +1,18 @@
 import { BaseMapResolver } from './common/BaseMapResolver';
-import { resolveFromFieldMap } from './common/FieldMap';
+import { resolveFromMap } from './common/MapResolver';
 import { createKeyMatcher, createKeyResolver } from './common/KeyMatcher';
 
-export class MapResolver extends BaseMapResolver {
+export class TypeMapResolver extends BaseMapResolver {
   fieldMap: any;
   context: any;
   typeFieldMap: any;
-  resolveFromFieldMap: (ctx, config?) => any;
+  resolveFromMap: (ctx, config?) => any;
   functions: any;
   mapName: string;
+  mapResolved: {
+    typeMap?: boolean;
+    fieldMap?: boolean;
+  };
 
   constructor(mapName, ctx: any = {}, config: any = {}) {
     super(ctx, config);
@@ -25,13 +29,14 @@ export class MapResolver extends BaseMapResolver {
     const fieldName = field.name;
     const fieldType = field.type;
 
-    this.init(mapName, { maps: config.maps, typeName });
+    this.init(mapName, { maps: config.maps });
     this.mapName = mapName;
     const resolvers = this.resolversFor(mapName);
     const factories = this.resolversFor(mapName);
 
-    this.resolveFromFieldMap =
-      resolvers.resolveFromFieldMap || resolveFromFieldMap;
+    this.resolveFromMap = resolvers.resolveFromMap || resolveFromMap;
+
+    // console.log('' + resolvers.resolveResult);
 
     this.functions = {
       ...functions,
@@ -39,6 +44,7 @@ export class MapResolver extends BaseMapResolver {
       ...factories,
       ...resolvers
     };
+    this.mapResolved = {};
 
     this.context = {
       mapName,
@@ -55,21 +61,42 @@ export class MapResolver extends BaseMapResolver {
     };
   }
 
-  init(name, { maps, typeName }) {
+  init(name, { maps }) {
     const confMap = this.mapsDataFor(name, maps);
 
     this.functions = {
       ...this.functions
     };
-    const typeMap = confMap.typeMap || {};
+    this.typeFieldMap = confMap.typeMap || {};
     this.fieldMap = confMap.fieldMap || {};
-
-    const typeFieldMap = typeMap[typeName] || {};
-    this.typeFieldMap = typeFieldMap;
   }
 
   resolve() {
-    return this.resolveMap(this.typeFieldMap) || this.resolveMap(this.fieldMap);
+    let result;
+    this.mapResolved = {};
+    const resolvedTypeMap = this.resolveTypeMap();
+    if (resolvedTypeMap) {
+      result = this.resolveFieldMap(resolvedTypeMap);
+    }
+
+    result = result || this.resolveFieldMap();
+    return result;
+  }
+
+  resolveTypeMap() {
+    const result = this.resolveMap(this.typeFieldMap, { isType: true });
+    if (result) {
+      this.mapResolved.typeMap = true;
+    }
+    return result;
+  }
+
+  resolveFieldMap(map = this.fieldMap) {
+    const result = this.resolveMap(map);
+    if (result) {
+      this.mapResolved.fieldMap = true;
+    }
+    return result;
   }
 
   get defaultFactories() {
@@ -79,13 +106,11 @@ export class MapResolver extends BaseMapResolver {
     };
   }
 
-  resolveMap(map) {
-    if (!map) {
-      return null;
-    }
-    return this.resolveFromFieldMap(
+  resolveMap(map, opts = {}) {
+    return this.resolveFromMap(
       {
-        fieldMap: map,
+        opts,
+        map,
         ...this.context
       },
       this.config

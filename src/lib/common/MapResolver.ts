@@ -1,21 +1,17 @@
 import { Base } from '../Base';
 
-export function resolveFromFieldMap(ctx, config?) {
-  return new FieldMap(ctx, config).resolve();
+export function resolveFromMap(ctx, config?) {
+  const resolver = createMapResolver(ctx, config);
+  return resolver.resolve();
 }
 
-export class FieldMap extends Base {
-  // functions,
-  // type,
-  // typeName,
-  // field,
-  // fieldName,
-  // fieldType,
-  // fields,
-  // config,
-  // error,
-  // log
-  fieldMap: any;
+export function createMapResolver(ctx, config?) {
+  return new MapResolver(ctx, config);
+}
+
+export class MapResolver extends Base {
+  map: any;
+  name: string;
   ctx: any;
   createKeyMatcher: (
     ctx: any,
@@ -29,12 +25,13 @@ export class FieldMap extends Base {
   constructor(ctx: any, config = {}) {
     super(config);
     this.ctx = ctx;
-    const { fieldMap, functions } = ctx;
+    this.name = ctx.name;
+    const { map, functions } = ctx;
     if (!functions) {
       this.error('missing functions entry on context');
     }
-    if (!fieldMap) {
-      this.error('missing fieldMap');
+    if (!this.isObject(map)) {
+      this.error('missing map');
     }
     const { createKeyResolver, createKeyMatcher } = functions;
     if (typeof createKeyResolver !== 'function') {
@@ -54,28 +51,20 @@ export class FieldMap extends Base {
       });
     }
 
-    this.fieldMap = fieldMap;
+    this.map = map;
     this.resolveKey = resolveKey;
   }
 
   resolve() {
-    // this.validateFunction({
-    //   method: 'resolve',
-    //   data: {
-    //     config: this.config
-    //   },
-    //   func: this.createKeyMatcher,
-    //   functionName: 'createKeyMatcher',
-    //   error: this.error
-    // });
-
-    const keys = Object.keys(this.fieldMap);
-    if (keys.length === 0) {
-      this.warn('no keys in fieldMap', {
-        fieldMap: this.fieldMap
+    const { map } = this;
+    if (!this.isFullObject(map)) {
+      this.warn('no keys in map', {
+        map
       });
       return null;
     }
+    const keys = Object.keys(map);
+    // console.log('resolve', { keys, name: this.name, map });
     let result;
     const key = keys.find(key => {
       result = this.resolveKey(key);

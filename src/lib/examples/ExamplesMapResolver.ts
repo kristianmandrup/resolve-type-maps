@@ -1,5 +1,5 @@
 import * as maps from '../maps';
-import { MapResolver } from '../MapResolver';
+import { TypeMapResolver } from '../TypeMapResolver';
 
 export const isValidResult = Array.isArray;
 
@@ -8,7 +8,7 @@ export const resolveResult = obj => {
   if (obj.values) return obj.values;
 };
 
-export class ExamplesMapResolver extends MapResolver {
+export class ExamplesMapResolver extends TypeMapResolver {
   constructor(ctx = {}, config = {}) {
     super('examples', ctx, {
       maps,

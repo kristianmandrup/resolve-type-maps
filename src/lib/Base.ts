@@ -46,6 +46,14 @@ export class Base {
     return path.join(__dirname, '..');
   }
 
+  isObject(obj) {
+    return obj === Object(obj);
+  }
+
+  isFullObject(obj) {
+    return obj === Object(obj) && Object.keys(obj).length > 0;
+  }
+
   validateFunction({ method, functionName, func, data, error }) {
     if (typeof func !== 'function') {
       error(`${method}: missing or invalid ${functionName} function`, {
