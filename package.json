@@ -1,6 +1,6 @@
 {
   "name": "resolve-type-maps",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Resolve type maps for use when building and resolving type models",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
