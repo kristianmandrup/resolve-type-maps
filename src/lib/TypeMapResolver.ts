@@ -34,7 +34,7 @@ export class TypeMapResolver extends BaseMapResolver {
     const fieldType = field.type;
 
     this.init(mapName, { maps: config.maps, map });
-    this.mapName = mapName;
+    this.mapName = mapName || config.mapName;
     const resolvers = this.resolversFor(mapName);
     const factories = this.resolversFor(mapName);
 

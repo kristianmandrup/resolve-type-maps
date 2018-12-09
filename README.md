@@ -2,6 +2,75 @@
 
 Resolve type maps for use when building and resolving type models.
 
+## Usage
+
+```js
+import {
+  createTypeMapResolver,
+  TypeMapResolver,
+  createMapResolver,
+  MapResolver,
+  BaseMapResolver,
+  Base
+} from 'resolve-type-maps';
+
+// see maps examples below
+import * as maps from '../maps';
+
+export const isValidResult = value => {
+  if (!value) return false;
+  const testVal = value.faker || value;
+  return Boolean(typeof testVal === 'string');
+};
+
+export const resolveResult = ({ value, key = value }: any = {}) => {
+  const $default = { faker: key, options: {} };
+  if (value.faker) {
+    return { faker: value.faker, options: value.options || {} };
+  }
+  return $default;
+};
+
+export class FakesMapResolver extends TypeMapResolver {
+  constructor(ctx = {}, config = {}) {
+    super(ctx, {
+      mapName: 'fakes',
+      maps,
+      ...config
+    });
+    this.functions = {
+      ...this.functions,
+      resolveResult,
+      isValidResult
+    };
+  }
+}
+
+export const resolveFakes = ({
+  type,
+  name,
+  field,
+  fields = [],
+  config = {}
+}: any): FakerResult => {
+  return new FakesMapResolver({ type, name, field, fields, config }).resolve();
+};
+
+const config = {
+  maps: {
+    fakes: {
+      fieldMap: {
+        word: ['firstName']
+      }
+    }
+  }
+};
+// should resolve to {faker: 'word', options: {}}
+const fields = ['firstName', 'lastName'];
+
+const fake = resolveFakes({ type, field, fields, config });
+```
+
 ## Example type and field maps
 
 ### Schema configuration
