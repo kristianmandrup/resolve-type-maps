@@ -14,6 +14,8 @@ This can be used to assign default configurations for:
 - faking/mocking entities and fields
 - ...
 
+See the [json-schema-to-es-mapping](https://github.com/kristianmandrup/json-schema-to-es-mapping#resolve-type-maps) for an example where this library (and its features) can be used effectively.
+
 You could even generate models and schemas directly from data, such as JSON data.
 
 ```js
